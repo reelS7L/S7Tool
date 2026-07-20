@@ -24,7 +24,7 @@ public partial class MainWindow : Window
         DataContext = _viewModel;
     }
 
-    private void ResizeGrip_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private async void ResizeGrip_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (sender is not FrameworkElement grip || grip.DataContext is not DiskPartitionInfo partition)
             return;
@@ -37,7 +37,11 @@ public partial class MainWindow : Window
             return;
 
         if (partition.MaxSizeBytes <= 0)
-            Task.Run(() => _viewModel.PrepareResizeBoundsAsync(partition)).GetAwaiter().GetResult();
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
+            try { await _viewModel.PrepareResizeBoundsAsync(partition); }
+            finally { Mouse.OverrideCursor = null; }
+        }
 
         double minGb = Math.Round(partition.MinSizeBytes / 1024.0 / 1024.0 / 1024.0, 1);
         double maxGb = Math.Round(partition.MaxSizeBytes / 1024.0 / 1024.0 / 1024.0, 1);

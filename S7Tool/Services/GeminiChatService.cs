@@ -13,7 +13,7 @@ public class GeminiChatService : IGeminiChatService
     private readonly ISecretsProvider _secretsProvider;
 
     private const string StreamEndpoint =
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse";
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:streamGenerateContent?alt=sse";
 
     private const string NotConfiguredMessage =
         "Clé API Gemini non configurée. Ouvre les paramètres de l'IA (icône ⚙) pour la renseigner, " +
@@ -79,7 +79,10 @@ public class GeminiChatService : IGeminiChatService
                     continue;
                 }
 
-                onUpdate($"Erreur API Gemini (code {(int)response.StatusCode}).");
+                string errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                string detail = TryExtractErrorMessage(errorBody) ?? errorBody;
+                onUpdate($"Erreur API Gemini (code {(int)response.StatusCode})." +
+                    (string.IsNullOrWhiteSpace(detail) ? "" : $"\n{detail}"));
                 return;
             }
 
@@ -109,6 +112,19 @@ public class GeminiChatService : IGeminiChatService
         }
 
         onUpdate("Service Gemini indisponible pour le moment, réessaie plus tard.");
+    }
+
+    private static string? TryExtractErrorMessage(string json)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            return doc.RootElement.GetProperty("error").GetProperty("message").GetString();
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     private static string? TryExtractText(string json)
