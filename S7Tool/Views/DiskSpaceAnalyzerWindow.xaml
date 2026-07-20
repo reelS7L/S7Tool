@@ -1,0 +1,306 @@
+<Window x:Class="S7Tool.Views.DiskSpaceAnalyzerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:S7Tool.Controls"
+        Style="{StaticResource AppWindowStyle}"
+        Title="Analyseur d'espace disque"
+        Width="1160"
+        Height="760"
+        MinWidth="900"
+        MinHeight="600"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style x:Key="BreadcrumbButtonStyle" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style x:Key="ViewModeToggleStyle" TargetType="RadioButton">
+            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSoftBrush}"/>
+            <Setter Property="Background" Value="{StaticResource CardBg2Brush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderSoftBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ContextMenu x:Key="SpaceItemContextMenu">
+            <MenuItem Header="Ouvrir" Command="{Binding PlacementTarget.DataContext.OpenSelectedCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="Afficher dans l'Explorateur" Command="{Binding PlacementTarget.DataContext.ShowInExplorerCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="Copier le chemin" Command="{Binding PlacementTarget.DataContext.CopyPathCommand, RelativeSource={RelativeSource Self}}"/>
+            <Separator/>
+            <MenuItem Header="Rafraîchir ce dossier" Command="{Binding PlacementTarget.DataContext.RefreshSelectedFolderCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="Propriétés" Command="{Binding PlacementTarget.DataContext.ShowPropertiesCommand, RelativeSource={RelativeSource Self}}"/>
+            <Separator/>
+            <MenuItem Header="Supprimer (corbeille)" Command="{Binding PlacementTarget.DataContext.DeleteSelectedCommand, RelativeSource={RelativeSource Self}}"/>
+        </ContextMenu>
+    </Window.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="6"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Border Style="{StaticResource DashboardTileIconStyle}" Width="48" Height="48" Margin="0,0,14,0">
+                <TextBlock Text="&#xE9D2;" FontFamily="{StaticResource IconFontFamily}" FontSize="20" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Analyseur d'espace disque" Style="{StaticResource PageTitleTextStyle}"/>
+                <TextBlock Text="Scan récursif, navigation par taille" Style="{StaticResource SubtitleTextStyle}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="14">
+            <StackPanel>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{Binding RootPath, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+                    <Button Grid.Column="2" Content="Parcourir..." Style="{StaticResource SecondaryButtonStyle}" Command="{Binding BrowseFolderCommand}"/>
+                    <Button Grid.Column="4" Content="Analyser" Command="{Binding ScanCommand}"
+                            Visibility="{Binding IsScanning, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                    <Button Grid.Column="4" Content="Arrêter" Style="{StaticResource DangerButtonStyle}" Command="{Binding StopScanCommand}"
+                            Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Disque entier : " Style="{StaticResource SubtitleTextStyle}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ItemsControl ItemsSource="{Binding AvailableDrives}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding}" Style="{StaticResource SecondaryButtonStyle}" Padding="10,5" Margin="0,0,8,0"
+                                        Command="{Binding DataContext.BrowseDriveCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <UniformGrid Grid.Row="4" Columns="5" Rows="1">
+            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,8,0" Padding="12">
+                <StackPanel>
+                    <TextBlock Text="Capacité du disque" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{Binding DriveTotalGb, StringFormat={}{0:0.#} Go}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource CardBorderStyle}" Margin="4,0" Padding="12">
+                <StackPanel>
+                    <TextBlock Text="Utilisé" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{Binding DriveUsedGb, StringFormat={}{0:0.#} Go}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource CardBorderStyle}" Margin="4,0" Padding="12">
+                <StackPanel>
+                    <TextBlock Text="Libre" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{Binding DriveFreeGb, StringFormat={}{0:0.#} Go}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource CardBorderStyle}" Margin="4,0" Padding="12">
+                <StackPanel>
+                    <TextBlock Text="Fichiers / Dossiers" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{Binding ScannedFileCount, StringFormat={}{0:N0}}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource CardBorderStyle}" Margin="8,0,0,0" Padding="12">
+                <StackPanel>
+                    <TextBlock Text="Durée du scan" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{Binding ScanDurationDisplay}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <TextBlock Grid.Row="6" Text="{Binding ProgressText}" Style="{StaticResource SubtitleTextStyle}" FontSize="12"
+                   Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+        <Grid Grid.Row="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Breadcrumb}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Name}" Style="{StaticResource BreadcrumbButtonStyle}"
+                                    Command="{Binding DataContext.NavigateIntoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <TextBox Grid.Column="2" Width="140" Margin="0,0,8,0" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Tag="Nom..."/>
+            <TextBox Grid.Column="3" Width="80" Margin="0,0,8,0" Text="{Binding FilterExtension, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Grid.Column="4" Content="Remonter" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding NavigateUpCommand}"/>
+        </Grid>
+
+        <Grid Grid.Row="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <RadioButton GroupName="SpaceViewMode" Style="{StaticResource ViewModeToggleStyle}" Content="Liste"
+                             IsChecked="{Binding ViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Liste}"/>
+                <RadioButton GroupName="SpaceViewMode" Style="{StaticResource ViewModeToggleStyle}" Content="Carrés imbriqués"
+                             IsChecked="{Binding ViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Treemap}"/>
+                <RadioButton GroupName="SpaceViewMode" Style="{StaticResource ViewModeToggleStyle}" Content="Diagramme"
+                             IsChecked="{Binding ViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Diagramme}"/>
+            </StackPanel>
+
+            <Button Grid.Column="2" Content="Actualiser" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding RefreshDisplayCommand}"/>
+        </Grid>
+
+        <Grid Grid.Row="12">
+            <Border Style="{StaticResource CardBorderStyle}" Padding="10"
+                    Visibility="{Binding ViewMode, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Liste}">
+                <DataGrid ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
+                          AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" HeadersVisibility="Column">
+                    <DataGrid.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding NavigateIntoCommand}" CommandParameter="{Binding SelectedItem}"/>
+                    </DataGrid.InputBindings>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Nom" Width="2.4*" SortMemberPath="Name">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource IconFontFamily}" Foreground="{StaticResource AccentBrush}" Margin="0,0,8,0" VerticalAlignment="Center"
+                                                   Visibility="{Binding IsDirectory, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Taille" Binding="{Binding SizeDisplay}" SortMemberPath="SizeBytes" Width="1*"/>
+                        <DataGridTemplateColumn Header="% du dossier" Width="1.4*" SortMemberPath="PercentOfParent">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Border Background="{StaticResource SurfaceBrush}" CornerRadius="4" Height="14" HorizontalAlignment="Stretch"/>
+                                        <Border Background="{StaticResource AccentBrush}" CornerRadius="4" Height="14" HorizontalAlignment="Left" Width="{Binding PercentOfParent}"/>
+                                        <TextBlock Text="{Binding PercentOfParent, StringFormat={}{0:0.#}%}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Type" Binding="{Binding Extension}" Width="0.8*"/>
+                        <DataGridTextColumn Header="Modifié" Binding="{Binding LastWriteTimeUtc, StringFormat={}{0:dd/MM/yyyy}}" Width="1*"/>
+                    </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Ouvrir" Command="{Binding PlacementTarget.DataContext.OpenSelectedCommand, RelativeSource={RelativeSource Self}}"/>
+                            <MenuItem Header="Afficher dans l'Explorateur" Command="{Binding PlacementTarget.DataContext.ShowInExplorerCommand, RelativeSource={RelativeSource Self}}"/>
+                            <MenuItem Header="Copier le chemin" Command="{Binding PlacementTarget.DataContext.CopyPathCommand, RelativeSource={RelativeSource Self}}"/>
+                            <Separator/>
+                            <MenuItem Header="Rafraîchir ce dossier" Command="{Binding PlacementTarget.DataContext.RefreshSelectedFolderCommand, RelativeSource={RelativeSource Self}}"/>
+                            <MenuItem Header="Propriétés" Command="{Binding PlacementTarget.DataContext.ShowPropertiesCommand, RelativeSource={RelativeSource Self}}"/>
+                            <Separator/>
+                            <MenuItem Header="Supprimer (corbeille)" Command="{Binding PlacementTarget.DataContext.DeleteSelectedCommand, RelativeSource={RelativeSource Self}}"/>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}" Padding="10"
+                    Visibility="{Binding ViewMode, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Treemap}">
+                <controls:TreemapControl x:Name="TreemapView" ItemsSource="{Binding Items}" ContextMenu="{StaticResource SpaceItemContextMenu}"/>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}" Padding="14"
+                    Visibility="{Binding ViewMode, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Diagramme}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="230"/>
+                    </Grid.ColumnDefinitions>
+
+                    <controls:PieChartControl x:Name="PieView" Grid.Column="0" ItemsSource="{Binding ChartLegend}" ContextMenu="{StaticResource SpaceItemContextMenu}"/>
+
+                    <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ChartLegend}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <Border Width="12" Height="12" CornerRadius="3" Background="{Binding ColorBrush}" VerticalAlignment="Center" Margin="0,2,8,0"/>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontSize="12" TextTrimming="CharacterEllipsis" MaxWidth="180"/>
+                                            <TextBlock Style="{StaticResource SubtitleTextStyle}" FontSize="11">
+                                                <Run Text="{Binding SizeDisplay, Mode=OneWay}"/>
+                                                <Run Text=" — "/>
+                                                <Run Text="{Binding Percent, Mode=OneWay, StringFormat={}{0:0.#}%}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="14" Text="{Binding StatusText}" Style="{StaticResource SubtitleTextStyle}"/>
+
+    </Grid>
+</Window>

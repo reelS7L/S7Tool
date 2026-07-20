@@ -1,0 +1,53 @@
+<Window x:Class="S7Tool.Views.RenamePCWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindowStyle}"
+        Title="Renommer le poste"
+        Height="480"
+        Width="740"
+        MinHeight="420"
+        MinWidth="600"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE7F8;" FontFamily="{StaticResource IconFontFamily}" FontSize="20" Foreground="{StaticResource AccentBrush}" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Renommer l'ordinateur" FontSize="20" FontWeight="Bold"/>
+            </StackPanel>
+            <TextBlock Text="Saisis un nouveau nom pour ce poste" Margin="0,5,0,0" FontSize="13" Style="{StaticResource SubtitleTextStyle}"/>
+        </StackPanel>
+
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="15">
+
+            <StackPanel>
+
+                <TextBlock Text="Nom actuel" Style="{StaticResource SubtitleTextStyle}"/>
+                <TextBlock Text="{Binding CurrentName}" Margin="0,5,0,10" FontSize="16" FontWeight="SemiBold"/>
+
+                <TextBlock Text="Nouveau nom" Style="{StaticResource SubtitleTextStyle}"/>
+                <TextBox Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10" MaxLength="15"/>
+
+                <TextBlock Text="(Max 15 caractères - lettres, chiffres, tirets)" FontSize="11" Style="{StaticResource SubtitleTextStyle}"/>
+
+            </StackPanel>
+        </Border>
+
+        <TextBlock Grid.Row="4" Text="{Binding StatusText}" FontSize="12" Style="{StaticResource SubtitleTextStyle}"/>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,30,0,0">
+            <Button Content="Annuler" Width="100" Margin="0,0,10,0" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding CancelCommand}"/>
+            <Button Content="Renommer" Width="120" Command="{Binding RenameCommand}"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

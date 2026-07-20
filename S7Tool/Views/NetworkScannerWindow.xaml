@@ -1,0 +1,120 @@
+<Window x:Class="S7Tool.Views.NetworkScannerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindowStyle}"
+        Title="Scanner réseau"
+        Width="1000"
+        Height="680"
+        MinWidth="760"
+        MinHeight="480"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Border Style="{StaticResource DashboardTileIconStyle}" Width="48" Height="48" Margin="0,0,14,0">
+                <TextBlock Text="&#xE968;" FontFamily="{StaticResource IconFontFamily}" FontSize="20" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Scanner réseau" Style="{StaticResource PageTitleTextStyle}"/>
+                <TextBlock Text="Découverte des appareils sur le réseau local" Style="{StaticResource SubtitleTextStyle}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="14">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Plage(s) IP" VerticalAlignment="Center" Margin="0,0,8,0" Style="{StaticResource SubtitleTextStyle}"/>
+                    <TextBox Grid.Column="1" Text="{Binding IpRanges, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"
+                             ToolTip="Ex: 192.168.1.1-192.168.1.254, 192.168.2.1-192.168.2.50"/>
+                    <Button Grid.Column="2" Content="+ Mon réseau" MinWidth="110" Margin="10,0,0,0" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding AddDetectedRangeCommand}"/>
+                </Grid>
+
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="160"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="Scanner" MinWidth="110" Command="{Binding ScanCommand}"
+                            Visibility="{Binding IsScanning, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                    <Button Grid.Column="0" Content="Arrêter" MinWidth="110" Style="{StaticResource DangerButtonStyle}" Command="{Binding StopCommand}"
+                            Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                    <Button Grid.Column="1" Content="Exporter CSV" MinWidth="120" Margin="10,0,0,0" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding ExportCsvCommand}"/>
+
+                    <ProgressBar Grid.Column="3" Height="8" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" VerticalAlignment="Center"
+                                 Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="4" Style="{StaticResource CardBorderStyle}" Padding="10">
+            <DataGrid x:Name="ResultsGrid"
+                      ItemsSource="{Binding Hosts}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      HeadersVisibility="Column"
+                      MouseDoubleClick="ResultsGrid_MouseDoubleClick"
+                      Sorting="ResultsGrid_Sorting">
+                <DataGrid.Columns>
+                    <DataGridTextColumn x:Name="IpColumn" Header="Adresse IP" Binding="{Binding IpAddress}" Width="1.1*"/>
+                    <DataGridTextColumn Header="Nom d'hôte" Binding="{Binding Hostname}" Width="1.8*"/>
+                    <DataGridTextColumn Header="Adresse MAC" Binding="{Binding MacAddress}" Width="1.4*"/>
+                    <DataGridTextColumn Header="Réponse (ms)" Binding="{Binding ResponseTimeMs}" Width="0.9*"/>
+                    <DataGridTemplateColumn Header="Services détectés" Width="1.3*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OpenPortsSummary}" VerticalAlignment="Center" Foreground="{StaticResource AccentHoverBrush}" FontSize="12"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="" Width="90">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Ouvrir"
+                                        FontSize="11"
+                                        Height="26"
+                                        Command="{Binding DataContext.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}"
+                                        Visibility="{Binding HasWeb, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="" Width="130">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Réveiller (WOL)"
+                                        FontSize="11"
+                                        Height="26"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        Command="{Binding DataContext.WakeOnLanCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <TextBlock Grid.Row="6" Text="{Binding StatusText}" Style="{StaticResource SubtitleTextStyle}"/>
+
+    </Grid>
+</Window>

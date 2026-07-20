@@ -1,0 +1,2 @@
+S7Tool/Resources/WinPE/boot.wim filter=lfs diff=lfs merge=lfs -text
+S7Tool/Resources/WinPE/boot.sdi filter=lfs diff=lfs merge=lfs -text

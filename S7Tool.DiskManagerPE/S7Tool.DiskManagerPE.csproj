@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Platforms>x64</Platforms>
+    <!-- PAS de InvariantGlobalization ici (contrairement à DiskEngine.Cli, un simple outil console) :
+         WPF a besoin des données de culture complètes en interne (XmlLanguage.GetSpecificCulture,
+         utilisé par le moteur de data binding dès qu'une liaison est activée) — en mode invariant,
+         ça plante immédiatement avec "Cannot find non-neutral culture related to 'en-us'." dès le
+         premier binding, empêchant toute affichage de fenêtre. -->
+    <Description>Shell graphique de l'environnement hors ligne (WinPE) — toute la gestion de disques (détection, CRUD, clonage, déplacement) a lieu ici, jamais sous Windows. Devient le shell de WinPE via winpeshl.ini (voir tools/Build-WinPE.ps1).</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\S7Tool.DiskEngine\S7Tool.DiskEngine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+</Project>

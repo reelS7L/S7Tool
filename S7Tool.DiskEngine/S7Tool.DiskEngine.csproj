@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <Platforms>x64</Platforms>
+    <Description>Moteur de clonage/déplacement bas niveau (accès disque physique brut) pour S7Tool.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- CRC32 (algorithme requis par le format GPT) : utilise l'implémentation officielle .NET
+         plutôt qu'une réécriture manuelle — une erreur ici corromprait silencieusement la table
+         de partition. -->
+    <PackageReference Include="System.IO.Hashing" Version="9.0.0" />
+    <!-- Utilisé par Models/DiskModels.cs (aperçu en direct du glisser-déposer de redimensionnement/
+         déplacement de partition côté UI) — DiskEngine.Cli référence ce projet mais n'utilise jamais
+         ces propriétés observables, coût négligeable pour un outil console. -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+</Project>

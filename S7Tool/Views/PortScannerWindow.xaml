@@ -1,0 +1,94 @@
+<Window x:Class="S7Tool.Views.PortScannerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindowStyle}"
+        Title="Scanner de ports"
+        Width="820"
+        Height="640"
+        MinWidth="620"
+        MinHeight="440"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Border Style="{StaticResource DashboardTileIconStyle}" Width="48" Height="48" Margin="0,0,14,0">
+                <TextBlock Text="&#xE99A;" FontFamily="{StaticResource IconFontFamily}" FontSize="20" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Scanner de ports" Style="{StaticResource PageTitleTextStyle}"/>
+                <TextBlock Text="Détection des ports TCP ouverts sur un hôte" Style="{StaticResource SubtitleTextStyle}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="14">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="90"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Hôte" VerticalAlignment="Center" Margin="0,0,8,0" Style="{StaticResource SubtitleTextStyle}"/>
+                    <TextBox Grid.Column="1" Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+
+                    <TextBlock Grid.Column="3" Text="Ports" VerticalAlignment="Center" Margin="0,0,8,0" Style="{StaticResource SubtitleTextStyle}"/>
+                    <TextBox Grid.Column="4" Text="{Binding StartPort, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <TextBlock Grid.Column="5" Text="à" VerticalAlignment="Center" Margin="8,0" Style="{StaticResource SubtitleTextStyle}"/>
+                    <TextBox Grid.Column="7" Text="{Binding EndPort, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                </Grid>
+
+                <Grid Margin="0,14,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="160"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="Scanner" MinWidth="110" Command="{Binding ScanCommand}"
+                            Visibility="{Binding IsScanning, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                    <Button Grid.Column="0" Content="Arrêter" MinWidth="110" Style="{StaticResource DangerButtonStyle}" Command="{Binding StopCommand}"
+                            Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                    <Button Grid.Column="1" Content="Ports 1-1024" MinWidth="120" Margin="10,0,0,0" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding UseCommonPortsCommand}"/>
+                    <Button Grid.Column="2" Content="Exporter CSV" MinWidth="120" Margin="10,0,0,0" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding ExportCsvCommand}"/>
+
+                    <ProgressBar Grid.Column="4" Height="8" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" VerticalAlignment="Center"
+                                 Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="4" Style="{StaticResource CardBorderStyle}" Padding="10">
+            <DataGrid ItemsSource="{Binding OpenPorts}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      HeadersVisibility="Column">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="*"/>
+                    <DataGridTextColumn Header="Service" Binding="{Binding ServiceName}" Width="2*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <TextBlock Grid.Row="6" Text="{Binding StatusText}" Style="{StaticResource SubtitleTextStyle}"/>
+
+    </Grid>
+</Window>

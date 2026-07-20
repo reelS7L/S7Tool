@@ -1,0 +1,224 @@
+<Window x:Class="S7Tool.Views.UninstallWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindowStyle}"
+        Title="Désinstallation"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        MinWidth="900"
+        MinHeight="600">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="18"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Border Style="{StaticResource DashboardTileIconStyle}" Width="48" Height="48" Margin="0,0,14,0">
+                <TextBlock Text="&#xE74D;" FontFamily="{StaticResource IconFontFamily}" FontSize="20" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Gestionnaire de désinstallation" Style="{StaticResource PageTitleTextStyle}"/>
+                <TextBlock Text="Sélection multiple avec désinstallation silencieuse" Style="{StaticResource SubtitleTextStyle}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Height="46"
+                    Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderSoftBrush}"
+                    BorderThickness="1.5"
+                    CornerRadius="10">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="{StaticResource TextMutedBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="42"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               Text="&#xE721;"
+                               FontFamily="{StaticResource IconFontFamily}"
+                               FontSize="15"
+                               Foreground="{StaticResource TextSoftBrush}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                    <TextBox Grid.Column="1"
+                             x:Name="SearchBox"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalContentAlignment="Center"
+                             FontSize="14"
+                             Padding="0,0,10,0"
+                             Background="Transparent"
+                             BorderThickness="0"/>
+
+                    <TextBlock Grid.Column="1"
+                               Text="Rechercher un logiciel installé..."
+                               FontSize="14"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               IsHitTestVisible="False"
+                               VerticalAlignment="Center"
+                               Margin="2,0,0,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Border>
+
+            <Button Grid.Column="2"
+                    Width="130" Height="46"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Command="{Binding LoadAppsCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE72C;" FontFamily="{StaticResource IconFontFamily}" FontSize="13" VerticalAlignment="Center"/>
+                    <TextBlock Text="Actualiser" FontSize="13" Margin="7,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="4">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="200" MinHeight="120"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Padding="14">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Applications installées" FontSize="15" FontWeight="Bold"/>
+
+                    <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" CornerRadius="10" Padding="6">
+                        <ListBox ItemsSource="{Binding AppsView}"
+                                 HorizontalContentAlignment="Stretch"
+                                 VirtualizingStackPanel.IsVirtualizing="True"
+                                 VirtualizingStackPanel.VirtualizationMode="Recycling">
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+
+                                    <Border Style="{StaticResource ListRowCardStyle}">
+
+                                        <Grid Background="Transparent">
+                                            <Grid.InputBindings>
+                                                <MouseBinding MouseAction="LeftClick"
+                                                              Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                              CommandParameter="{Binding}"/>
+                                            </Grid.InputBindings>
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="30"/>
+                                                <ColumnDefinition Width="28"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Width="16" Height="16" Margin="3" VerticalAlignment="Center" Source="{Binding Icon}"/>
+
+                                            <CheckBox Grid.Column="1"
+                                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                      VerticalAlignment="Center"
+                                                      Margin="2"
+                                                      IsHitTestVisible="False"/>
+
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
+                                                <TextBlock Text=" • " Style="{StaticResource SubtitleTextStyle}" Margin="6,0"/>
+                                                <TextBlock Text="{Binding Publisher}" Style="{StaticResource SubtitleTextStyle}"/>
+                                                <TextBlock Text=" • " Style="{StaticResource SubtitleTextStyle}" Margin="6,0"/>
+                                                <TextBlock Text="{Binding DisplayVersion}" Style="{StaticResource SubtitleTextStyle}"/>
+                                            </StackPanel>
+
+                                        </Grid>
+
+                                    </Border>
+
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <GridSplitter Grid.Row="1"
+                          Height="10"
+                          HorizontalAlignment="Stretch"
+                          Background="Transparent"
+                          ShowsPreview="True"
+                          Cursor="SizeNS"/>
+
+            <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="14">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Journal" FontSize="13" FontWeight="Bold" Foreground="{StaticResource TextSoftBrush}"/>
+
+                    <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" CornerRadius="10" Padding="8">
+                        <ListBox ItemsSource="{Binding Logs}" Background="Transparent" FontSize="12"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+        </Grid>
+
+        <Border Grid.Row="6" Style="{StaticResource CardBorderStyle}" Padding="12">
+
+            <WrapPanel HorizontalAlignment="Left">
+                <Button Content="{Binding UninstallButtonLabel}" MinWidth="200" Style="{StaticResource DangerButtonStyle}" Command="{Binding UninstallSelectedCommand}"/>
+                <Button Content="Tout sélectionner" MinWidth="150" Margin="10,0,0,0" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding SelectAllCommand}"/>
+                <Button Content="Tout désélectionner" MinWidth="170" Margin="10,0,0,0" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding ClearSelectionCommand}"/>
+            </WrapPanel>
+
+        </Border>
+
+    </Grid>
+</Window>

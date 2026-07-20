@@ -1,0 +1,407 @@
+<Window x:Class="S7Tool.DiskManagerPE.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:helpers="clr-namespace:S7Tool.DiskManagerPE.Helpers"
+        Title="Gestionnaire de disques (hors ligne)"
+        WindowState="Maximized"
+        WindowStyle="None"
+        Background="#0E1116"
+        FontFamily="Segoe UI"
+        Foreground="#E6EDF3">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="CardBg" Color="#161B22"/>
+        <SolidColorBrush x:Key="CardBorder" Color="#262D38"/>
+        <SolidColorBrush x:Key="SubtleText" Color="#8B949E"/>
+        <SolidColorBrush x:Key="AccentBg" Color="#2563EB"/>
+        <SolidColorBrush x:Key="AccentBgHover" Color="#1D4ED8"/>
+        <SolidColorBrush x:Key="DangerBg" Color="#B91C1C"/>
+        <SolidColorBrush x:Key="DangerBgHover" Color="#991B1B"/>
+        <SolidColorBrush x:Key="SuccessBg" Color="#15803D"/>
+        <SolidColorBrush x:Key="SuccessBgHover" Color="#166534"/>
+
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <helpers:ProportionalBarWidthConverter x:Key="ProportionalBarWidthConverter"/>
+        <helpers:GbDeltaToTranslateXConverter x:Key="GbDeltaToTranslateXConverter"/>
+
+        <Style TargetType="Border" x:Key="Card">
+            <Setter Property="Background" Value="{StaticResource CardBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#E6EDF3"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#0E1116"/>
+            <Setter Property="Foreground" Value="#E6EDF3"/>
+            <Setter Property="BorderBrush" Value="#333B48"/>
+            <Setter Property="CaretBrush" Value="#E6EDF3"/>
+            <Setter Property="Padding" Value="6,5"/>
+        </Style>
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#E6EDF3"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#232B37"/>
+            <Setter Property="Foreground" Value="#E6EDF3"/>
+            <Setter Property="BorderBrush" Value="#333B48"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="7"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button" x:Key="AccentButton" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource AccentBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBgHover}"/>
+        </Style>
+        <Style TargetType="Button" x:Key="SuccessButton" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource SuccessBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource SuccessBgHover}"/>
+        </Style>
+        <Style TargetType="Button" x:Key="DangerButton" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource DangerBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DangerBgHover}"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#11151B"/>
+            <Setter Property="Foreground" Value="#8B949E"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorder}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#E6EDF3"/>
+            <Setter Property="RowBackground" Value="Transparent"/>
+            <Setter Property="AlternatingRowBackground" Value="#191F27"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeight" Value="30"/>
+        </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#24344F"/>
+                    <Setter Property="Foreground" Value="#E6EDF3"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Border" x:Key="PartitionBarStyle">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#2E63C9" Offset="0"/>
+                        <GradientStop Color="#1E4CA6" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="#3B4C66"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsUnallocated}" Value="True">
+                    <Setter Property="Background" Value="#10141A"/>
+                    <Setter Property="BorderBrush" Value="#2A313C"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PartitionType}" Value="EFI">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#4B5563" Offset="0"/>
+                                <GradientStop Color="#374151" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PartitionType}" Value="Réservée (MSR)">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#4B5563" Offset="0"/>
+                                <GradientStop Color="#374151" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PartitionType}" Value="Récupération">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#B45309" Offset="0"/>
+                                <GradientStop Color="#92400E" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding HasPendingChange}" Value="True">
+                    <Setter Property="BorderBrush" Value="#F59E0B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="Gestionnaire de disques" FontSize="24" FontWeight="Bold"/>
+                <TextBlock Text="Environnement hors ligne — les modifications sont appliquées uniquement après validation"
+                           Foreground="{StaticResource SubtleText}" FontSize="12" Margin="0,2,0,0"/>
+            </StackPanel>
+            <Button Grid.Column="1" Content="Actualiser" Margin="0,0,10,0" VerticalAlignment="Center" Command="{Binding LoadDisksCommand}"/>
+            <Button Grid.Column="2" Content="Terminer et redémarrer sous Windows" Style="{StaticResource AccentButton}" VerticalAlignment="Center" Command="{Binding RebootCommand}"/>
+        </Grid>
+
+        <Border Grid.Row="2" Style="{StaticResource Card}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Text="Glisse le bord droit d'une partition pour la redimensionner (utile après un clonage vers un disque plus grand). Rien n'est écrit sur le disque avant validation."
+                               Foreground="{StaticResource SubtleText}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"
+                                Visibility="{Binding HasAnyPendingChange, Converter={StaticResource BoolToVis}}">
+                        <Button Content="Annuler" Margin="0,0,8,0" Command="{Binding CancelPendingChangesCommand}"/>
+                        <Button Content="✓ Appliquer les modifications" Style="{StaticResource SuccessButton}" Command="{Binding ApplyPendingChangesCommand}"/>
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="300">
+                    <ItemsControl ItemsSource="{Binding Disks}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,14">
+                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="13" Margin="2,0,0,6"/>
+                                    <Border Background="#0A0D11" BorderBrush="{StaticResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="4">
+                                        <ItemsControl ItemsSource="{Binding Partitions}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Style="{StaticResource PartitionBarStyle}"
+                                                            Height="52"
+                                                            Margin="1.5,0"
+                                                            ToolTip="{Binding BarLabel}">
+                                                        <Border.Width>
+                                                            <MultiBinding Converter="{StaticResource ProportionalBarWidthConverter}">
+                                                                <Binding Path="PendingSizeGb"/>
+                                                                <Binding Path="DataContext.SizeGb" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
+                                                            </MultiBinding>
+                                                        </Border.Width>
+                                                        <Grid>
+                                                            <StackPanel VerticalAlignment="Center" Margin="8,0,14,0">
+                                                                <TextBlock Text="{Binding DisplayName}" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                                                <TextBlock FontSize="10" Foreground="#C7D2E0" TextTrimming="CharacterEllipsis">
+                                                                    <Run Text="{Binding PendingSizeGb, Mode=OneWay, StringFormat={}{0:F1}}"/><Run Text=" Go"/>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                            <Border x:Name="Grip"
+                                                                    Width="9"
+                                                                    HorizontalAlignment="Right"
+                                                                    Background="#4C8DFF"
+                                                                    CornerRadius="0,5,5,0"
+                                                                    Opacity="0.65"
+                                                                    Cursor="SizeWE"
+                                                                    ToolTip="Glisser pour redimensionner"
+                                                                    MouseLeftButtonDown="ResizeGrip_MouseLeftButtonDown"
+                                                                    MouseMove="ResizeGrip_MouseMove"
+                                                                    MouseLeftButtonUp="ResizeGrip_MouseLeftButtonUp">
+                                                                <Border.Style>
+                                                                    <Style TargetType="Border">
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="Opacity" Value="1"/>
+                                                                            </Trigger>
+                                                                            <DataTrigger Binding="{Binding IsUnallocated}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Border.Style>
+                                                            </Border>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="130"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Style="{StaticResource Card}" Padding="8">
+                    <DataGrid ItemsSource="{Binding AllPartitions}" SelectedItem="{Binding SelectedPartition}" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Disque" Binding="{Binding DiskNumber}" Width="0.6*"/>
+                            <DataGridTextColumn Header="Partition" Binding="{Binding DisplayName}" Width="1.6*"/>
+                            <DataGridTextColumn Header="Système de fichiers" Binding="{Binding FileSystem}" Width="1.2*"/>
+                            <DataGridTextColumn Header="Taille (Go)" Binding="{Binding SizeGb}" Width="*"/>
+                            <DataGridTextColumn Header="Alignée" Binding="{Binding IsAligned}" Width="0.6*"/>
+                            <DataGridTextColumn Header="Masquée" Binding="{Binding IsHidden}" Width="0.6*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+
+                <Border Grid.Row="1" Style="{StaticResource Card}" Padding="8" Margin="0">
+                    <DataGrid ItemsSource="{Binding DiskHealth}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Disque" Binding="{Binding DiskNumber}" Width="*"/>
+                            <DataGridTextColumn Header="État SMART" Binding="{Binding HealthStatus}" Width="2*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
+
+            <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="Gestion de partition" FontWeight="Bold" FontSize="14" Margin="0,0,0,10"/>
+                            <TextBlock Text="Système de fichiers" Foreground="{StaticResource SubtleText}" FontSize="11" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding FileSystemOptions}" SelectedItem="{Binding PartitionFileSystem}" Margin="0,0,0,10"/>
+                            <TextBlock Text="Nom / étiquette" Foreground="{StaticResource SubtleText}" FontSize="11" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding PartitionLabel, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+                            <TextBlock Text="Taille (Go) — 0 = tout l'espace disponible (création)" Foreground="{StaticResource SubtleText}" FontSize="11" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding PartitionSizeGb, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" HorizontalContentAlignment="Center"/>
+                            <UniformGrid Columns="2">
+                                <Button Content="Créer" Command="{Binding CreatePartitionCommand}" Margin="0,0,4,8"/>
+                                <Button Content="Formater" Command="{Binding FormatPartitionCommand}" Margin="4,0,0,8"/>
+                                <Button Content="Renommer" Command="{Binding RenamePartitionCommand}" Margin="0,0,4,8"/>
+                                <Button Content="Masquer/Afficher" Command="{Binding ToggleHiddenCommand}" Margin="4,0,0,8"/>
+                            </UniformGrid>
+                            <Button Content="Supprimer" Style="{StaticResource DangerButton}" Command="{Binding DeletePartitionCommand}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="Clonage secteur par secteur" FontWeight="Bold" FontSize="14" Margin="0,0,0,6"/>
+                            <TextBlock Text="Après un clonage vers un disque plus grand, agrandis la partition clonée en glissant son bord droit sur la barre ci-dessus, puis Appliquer."
+                                       Foreground="{StaticResource SubtleText}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                            <TextBlock Text="Disque source" Foreground="{StaticResource SubtleText}" FontSize="11"/>
+                            <ComboBox ItemsSource="{Binding Disks}" DisplayMemberPath="DisplayName" SelectedItem="{Binding CloneSourceDisk}" Margin="0,4,0,10"/>
+                            <TextBlock Text="Disque de destination (sera entièrement effacé)" Foreground="{StaticResource SubtleText}" FontSize="11"/>
+                            <ComboBox ItemsSource="{Binding Disks}" DisplayMemberPath="DisplayName" SelectedItem="{Binding CloneDestinationDisk}" Margin="0,4,0,10"/>
+                            <CheckBox Content="Vérification complète après copie" IsChecked="{Binding SectorCloneVerify}" Margin="0,0,0,10"/>
+                            <Button Content="Cloner" Style="{StaticResource DangerButton}" Command="{Binding SectorCloneDiskCommand}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center" FontSize="12"/>
+                                <Button Grid.Column="1" Content="Arrêter" Style="{StaticResource DangerButton}" Command="{Binding StopOperationCommand}"/>
+                            </Grid>
+                            <Border Background="#0A0D11" BorderBrush="{StaticResource CardBorder}" BorderThickness="1" CornerRadius="6" Padding="6" Height="150">
+                                <ListBox ItemsSource="{Binding ActionLogs}" Background="Transparent" BorderThickness="0" Foreground="#9AA7B8" FontSize="11"/>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <TextBlock Grid.Row="5" Text="{Binding StatusText}" Foreground="{StaticResource SubtleText}" FontSize="12"/>
+
+    </Grid>
+</Window>
