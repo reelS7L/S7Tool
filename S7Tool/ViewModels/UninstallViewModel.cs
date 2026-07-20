@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using S7Tool.Models;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -21,7 +22,7 @@ public partial class UninstallViewModel : ObservableObject
     private string searchText = "";
 
     [ObservableProperty]
-    private string uninstallButtonLabel = "Désinstaller (0)";
+    private string uninstallButtonLabel = "";
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(UninstallSelectedCommand))]
@@ -51,7 +52,7 @@ public partial class UninstallViewModel : ObservableObject
         foreach (var app in _uninstallService.GetInstalledApps())
             Apps.Add(app);
 
-        AddLog($"Chargé : {Apps.Count} logiciels");
+        AddLog(string.Format(LocalizationManager.T("Str_Uninstall_Loaded"), Apps.Count));
         UpdateButtonLabel();
     }
 
@@ -83,16 +84,16 @@ public partial class UninstallViewModel : ObservableObject
 
         if (selected.Count == 0)
         {
-            _dialogService.ShowWarning("Aucune sélection");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_Dialog_NoSelection"));
             return;
         }
 
         IsBusy = true;
-        AddLog($"Désinstallation de {selected.Count} apps...");
+        AddLog(string.Format(LocalizationManager.T("Str_Uninstall_Uninstalling"), selected.Count));
 
         await _uninstallService.UninstallAppsAsync(selected, AddLog);
 
-        AddLog("Terminé");
+        AddLog(LocalizationManager.T("Str_Common_Done"));
         UpdateButtonLabel();
         IsBusy = false;
     }
@@ -102,7 +103,7 @@ public partial class UninstallViewModel : ObservableObject
     private void UpdateButtonLabel()
     {
         int count = Apps.Count(a => a.IsSelected);
-        UninstallButtonLabel = $"Désinstaller ({count})";
+        UninstallButtonLabel = $"{LocalizationManager.T("Str_Uninstall_ButtonLabel")} ({count})";
     }
 
     private void AddLog(string message) => Logs.Add($"[{DateTime.Now:HH:mm:ss}] {message}");

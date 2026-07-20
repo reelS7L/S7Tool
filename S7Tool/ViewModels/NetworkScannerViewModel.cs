@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using S7Tool.Helpers;
 using S7Tool.Models;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
@@ -30,7 +31,7 @@ public partial class NetworkScannerViewModel : ObservableObject
     private bool isScanning;
 
     [ObservableProperty]
-    private string statusText = "Prêt.";
+    private string statusText = "";
 
     public NetworkScannerViewModel(INetworkScannerService scanner, IDialogService dialogService)
     {
@@ -39,7 +40,7 @@ public partial class NetworkScannerViewModel : ObservableObject
 
         var (localIp, start, end) = _scanner.DetectLocalSubnet();
         IpRanges = $"{start}-{end}";
-        StatusText = $"Réseau détecté depuis {localIp}. Prêt à scanner.";
+        StatusText = string.Format(LocalizationManager.T("Str_NetScan_DetectedFrom"), localIp);
     }
 
     [RelayCommand]
@@ -57,14 +58,14 @@ public partial class NetworkScannerViewModel : ObservableObject
 
         if (ranges.Count == 0)
         {
-            _dialogService.ShowWarning("Aucune plage IP valide. Format attendu : 192.168.1.1-192.168.1.254 (plusieurs plages séparées par une virgule).");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_NetScan_InvalidRanges"));
             return;
         }
 
         Hosts.Clear();
         IsScanning = true;
         Progress = 0;
-        StatusText = $"Scan en cours sur {ranges.Count} plage(s)...";
+        StatusText = string.Format(LocalizationManager.T("Str_NetScan_ScanningRanges"), ranges.Count);
         _cts = new CancellationTokenSource();
 
         try
@@ -84,15 +85,15 @@ public partial class NetworkScannerViewModel : ObservableObject
             }
 
             Progress = 100;
-            StatusText = $"Scan terminé : {Hosts.Count} appareil(s) trouvé(s) sur {ranges.Count} plage(s).";
+            StatusText = string.Format(LocalizationManager.T("Str_NetScan_ScanDone"), Hosts.Count, ranges.Count);
         }
         catch (OperationCanceledException)
         {
-            StatusText = "Scan interrompu.";
+            StatusText = LocalizationManager.T("Str_NetScan_ScanInterrupted");
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur de scan");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_NetScan_ScanErrorTitle"));
         }
         finally
         {
@@ -114,18 +115,18 @@ public partial class NetworkScannerViewModel : ObservableObject
     {
         if (host is null || string.IsNullOrWhiteSpace(host.MacAddress))
         {
-            _dialogService.ShowWarning("Adresse MAC inconnue pour cet appareil.");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_NetScan_UnknownMac"));
             return;
         }
 
         try
         {
             _ = _scanner.SendWakeOnLanAsync(host.MacAddress);
-            _dialogService.ShowSuccess($"Paquet Wake-on-LAN envoyé à {host.MacAddress}.");
+            _dialogService.ShowSuccess(string.Format(LocalizationManager.T("Str_NetScan_WolSent"), host.MacAddress));
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur Wake-on-LAN");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_NetScan_WolErrorTitle"));
         }
     }
 
@@ -140,7 +141,7 @@ public partial class NetworkScannerViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur d'ouverture");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_NetScan_OpenErrorTitle"));
         }
     }
 
@@ -149,25 +150,25 @@ public partial class NetworkScannerViewModel : ObservableObject
     {
         if (Hosts.Count == 0)
         {
-            _dialogService.ShowWarning("Aucun résultat à exporter.");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_NetScan_NoResultsToExport"));
             return;
         }
 
-        var dialog = new SaveFileDialog { Filter = "Fichier CSV (*.csv)|*.csv", FileName = "scan_reseau.csv" };
+        var dialog = new SaveFileDialog { Filter = LocalizationManager.T("Str_NetScan_CsvFilter"), FileName = "scan_reseau.csv" };
         if (dialog.ShowDialog() != true) return;
 
         try
         {
             CsvExporter.Export(
                 dialog.FileName,
-                new[] { "Adresse IP", "Nom d'hôte", "Adresse MAC", "Temps de réponse (ms)", "Ports détectés" },
+                new[] { "IP Address", "Hostname", "MAC Address", "Response Time (ms)", "Detected Ports" },
                 Hosts.Select(h => new[] { h.IpAddress, h.Hostname, h.MacAddress, h.ResponseTimeMs.ToString(), h.OpenPortsSummary }));
 
-            _dialogService.ShowSuccess("Export CSV terminé.");
+            _dialogService.ShowSuccess(LocalizationManager.T("Str_NetScan_CsvExportDone"));
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur d'export");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_NetScan_ExportErrorTitle"));
         }
     }
 

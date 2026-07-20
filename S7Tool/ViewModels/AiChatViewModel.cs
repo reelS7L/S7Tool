@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using S7Tool.Models;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using S7Tool.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,10 +57,10 @@ public partial class AiChatViewModel : ObservableObject
         var text = InputText?.Trim();
         if (string.IsNullOrWhiteSpace(text)) return;
 
-        Messages.Add(new ChatEntry { Role = "Vous", IsUser = true, Text = text });
+        Messages.Add(new ChatEntry { Role = LocalizationManager.T("Str_AiChat_You"), IsUser = true, Text = text });
         InputText = "";
 
-        var assistantEntry = new ChatEntry { Role = "IA", IsUser = false, IsTyping = true };
+        var assistantEntry = new ChatEntry { Role = LocalizationManager.T("Str_AiChat_Ai"), IsUser = false, IsTyping = true };
         Messages.Add(assistantEntry);
 
         await StreamIntoAsync(assistantEntry);
@@ -76,7 +77,7 @@ public partial class AiChatViewModel : ObservableObject
         int index = Messages.IndexOf(lastAssistant);
         Messages.RemoveAt(index);
 
-        var assistantEntry = new ChatEntry { Role = "IA", IsUser = false, IsTyping = true };
+        var assistantEntry = new ChatEntry { Role = LocalizationManager.T("Str_AiChat_Ai"), IsUser = false, IsTyping = true };
         Messages.Insert(index, assistantEntry);
 
         await StreamIntoAsync(assistantEntry);
@@ -110,7 +111,7 @@ public partial class AiChatViewModel : ObservableObject
         {
             assistantEntry.IsTyping = false;
             if (string.IsNullOrEmpty(assistantEntry.Text))
-                assistantEntry.Text = "*Réponse interrompue.*";
+                assistantEntry.Text = LocalizationManager.T("Str_AiChat_ResponseInterrupted");
         }
         finally
         {

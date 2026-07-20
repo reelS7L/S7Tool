@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using S7Tool.Models;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using S7Tool.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -114,12 +115,12 @@ public partial class MainViewModel : ObservableObject
         if (IsPaused)
         {
             _processTimer.Stop();
-            PauseButtonLabel = "Reprendre";
+            PauseButtonLabel = LocalizationManager.T("Str_Main_Resume");
         }
         else
         {
             _processTimer.Start();
-            PauseButtonLabel = "Pause";
+            PauseButtonLabel = LocalizationManager.T("Str_Main_Pause");
         }
     }
 
@@ -174,13 +175,16 @@ public partial class MainViewModel : ObservableObject
                 0,
                 RegistryValueKind.DWord);
 
-            _dialogService.ShowSuccess("Démarrage rapide désactivé !");
+            _dialogService.ShowSuccess(LocalizationManager.T("Str_Main_FastStartupDisabled"));
         }
         catch (Exception ex)
         {
             _dialogService.ShowError(ex.Message);
         }
     }
+
+    [RelayCommand]
+    private void ToggleLanguage() => LocalizationManager.Toggle();
 
     [RelayCommand]
     private void Quit() => System.Windows.Application.Current.Shutdown();

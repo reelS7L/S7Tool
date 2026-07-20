@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindowStyle}"
-        Title="Paramètres de l'IA"
+        Title="{DynamicResource Str_AiSettings_Title}"
         Width="520"
         SizeToContent="Height"
         MinWidth="420"
@@ -23,24 +23,24 @@
                 <TextBlock Text="&#xE713;" FontFamily="{StaticResource IconFontFamily}" FontSize="18" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="Paramètres de l'IA" FontSize="18" FontWeight="Bold"/>
-                <TextBlock Text="Clé API Gemini" Style="{StaticResource SubtitleTextStyle}" Margin="0,2,0,0"/>
+                <TextBlock Text="{DynamicResource Str_AiSettings_Title}" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="{DynamicResource Str_AiSettings_ApiKeyLabel}" Style="{StaticResource SubtitleTextStyle}" Margin="0,2,0,0"/>
             </StackPanel>
         </StackPanel>
 
         <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="18">
             <StackPanel>
-                <TextBlock Text="Clé API Gemini" Style="{StaticResource SubtitleTextStyle}" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Str_AiSettings_ApiKeyLabel}" Style="{StaticResource SubtitleTextStyle}" Margin="0,0,0,6"/>
                 <TextBox Text="{Binding ApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,0"/>
 
                 <TextBlock Margin="0,10,0,0" FontSize="11" TextWrapping="Wrap" Style="{StaticResource SubtitleTextStyle}"
-                           Text="La clé est enregistrée uniquement en local sur ce poste (%LOCALAPPDATA%\S7Tool\secrets.json) et n'est jamais envoyée ailleurs qu'à l'API Gemini. Obtiens une clé gratuite sur aistudio.google.com/apikey."/>
+                           Text="{DynamicResource Str_AiSettings_Note}"/>
             </StackPanel>
         </Border>
 
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Annuler" Width="110" Margin="0,0,10,0" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding CancelCommand}"/>
-            <Button Content="Enregistrer" Width="130" Command="{Binding SaveCommand}"/>
+            <Button Content="{DynamicResource Str_Common_Cancel}" Width="110" Margin="0,0,10,0" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding CancelCommand}"/>
+            <Button Content="{DynamicResource Str_AiSettings_Save}" Width="130" Command="{Binding SaveCommand}"/>
         </StackPanel>
 
     </Grid>

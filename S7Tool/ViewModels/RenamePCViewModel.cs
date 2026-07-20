@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using S7Tool.Services;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -15,7 +16,7 @@ public partial class RenamePCViewModel : ObservableObject
     private string newName = "";
 
     [ObservableProperty]
-    private string statusText = "Prêt.";
+    private string statusText = LocalizationManager.T("Str_Common_Ready");
 
     [RelayCommand]
     private void Rename()
@@ -24,19 +25,19 @@ public partial class RenamePCViewModel : ObservableObject
 
         if (string.IsNullOrWhiteSpace(trimmed))
         {
-            StatusText = "Nom invalide.";
+            StatusText = LocalizationManager.T("Str_Rename_InvalidName");
             return;
         }
 
         if (!Regex.IsMatch(trimmed, @"^[a-zA-Z0-9\-]+$"))
         {
-            StatusText = "Caractères non autorisés.";
+            StatusText = LocalizationManager.T("Str_Rename_ForbiddenChars");
             return;
         }
 
         try
         {
-            StatusText = "Renommage en cours...";
+            StatusText = LocalizationManager.T("Str_Rename_InProgress");
 
             var psi = new ProcessStartInfo
             {
@@ -49,11 +50,11 @@ public partial class RenamePCViewModel : ObservableObject
 
             Process.Start(psi);
 
-            StatusText = "Renommage fait avec succès";
+            StatusText = LocalizationManager.T("Str_Rename_Success");
         }
         catch (Exception ex)
         {
-            StatusText = "Erreur : " + ex.Message;
+            StatusText = LocalizationManager.T("Str_Rename_Error") + ex.Message;
         }
     }
 

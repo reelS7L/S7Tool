@@ -10,10 +10,10 @@ public enum DialogSeverity
 
 public interface IDialogService
 {
-    void ShowInfo(string message, string title = "Information");
-    void ShowSuccess(string message, string title = "Succès");
-    void ShowWarning(string message, string title = "Attention");
-    void ShowError(string message, string title = "Erreur");
+    void ShowInfo(string message, string? title = null);
+    void ShowSuccess(string message, string? title = null);
+    void ShowWarning(string message, string? title = null);
+    void ShowError(string message, string? title = null);
 
-    bool Confirm(string message, string title = "Confirmation");
+    bool Confirm(string message, string? title = null);
 }

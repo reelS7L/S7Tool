@@ -29,25 +29,25 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Mon Pote GPT" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" Margin="20,0"/>
+                <TextBlock Text="{DynamicResource Str_AiChat_HeaderTitle}" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" Margin="20,0"/>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,20,0">
                     <TextBlock Text="{Binding StatusText}"
                                Style="{StaticResource SubtitleTextStyle}"
                                VerticalAlignment="Center"
                                Margin="0,0,14,0"/>
-                    <Button Content="Régénérer"
+                    <Button Content="{DynamicResource Str_AiChat_Regenerate}"
                             Margin="0,0,8,0"
                             Style="{StaticResource ToggleLikeButtonStyle}"
                             Command="{Binding RegenerateLastCommand}"/>
-                    <Button Content="Nouvelle conversation"
+                    <Button Content="{DynamicResource Str_AiChat_NewConversation}"
                             Margin="0,0,8,0"
                             Style="{StaticResource ToggleLikeButtonStyle}"
                             Command="{Binding ClearConversationCommand}"/>
                     <Button Width="32" Height="32"
                             Padding="0"
                             Style="{StaticResource SecondaryButtonStyle}"
-                            ToolTip="Paramètres de l'IA (clé API)"
+                            ToolTip="{DynamicResource Str_AiChat_SettingsTooltip}"
                             Command="{Binding OpenSettingsCommand}">
                         <TextBlock Text="&#xE713;" FontFamily="{StaticResource IconFontFamily}" FontSize="14"/>
                     </Button>
@@ -104,13 +104,13 @@
                                             Visibility="{Binding IsUser, Converter={StaticResource InverseBoolToVisibilityConverter}}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="&#xE8C8;" FontFamily="{StaticResource IconFontFamily}" FontSize="12" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Copier" FontSize="12" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{DynamicResource Str_AiChat_Copy}" FontSize="12" Margin="5,0,0,0" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" Visibility="{Binding IsTyping, Converter={StaticResource BoolToVisibilityConverter}}">
-                                    <TextBlock Text="en train d'écrire..." Style="{StaticResource SubtitleTextStyle}" FontStyle="Italic"/>
+                                    <TextBlock Text="{DynamicResource Str_AiChat_Typing}" Style="{StaticResource SubtitleTextStyle}" FontStyle="Italic"/>
                                 </StackPanel>
 
                                 <FlowDocumentScrollViewer Document="{Binding Text, Converter={StaticResource MarkdownConverter}}"
@@ -142,14 +142,14 @@
                          PreviewKeyDown="InputBox_PreviewKeyDown"/>
 
                 <Button Grid.Column="1"
-                        Content="Envoyer"
+                        Content="{DynamicResource Str_AiChat_Send}"
                         Command="{Binding SendCommand}"
                         Margin="10,0,0,0"
                         Height="55"
                         Visibility="{Binding IsSending, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
 
                 <Button Grid.Column="1"
-                        Content="Arrêter"
+                        Content="{DynamicResource Str_AiChat_Stop}"
                         Style="{StaticResource DangerButtonStyle}"
                         Command="{Binding StopCommand}"
                         Margin="10,0,0,0"

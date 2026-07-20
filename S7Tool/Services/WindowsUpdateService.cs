@@ -70,17 +70,17 @@ public class WindowsUpdateService : IWindowsUpdateService
         foreach (var item in updates)
             collection.Add((IUpdate)item.NativeUpdate);
 
-        progress.Report((10, "Téléchargement des mises à jour..."));
+        progress.Report((10, LocalizationManager.T("Str_WinUpdate_Downloading")));
         var downloader = session.CreateUpdateDownloader();
         downloader.Updates = collection;
         downloader.Download();
 
-        progress.Report((60, "Installation en cours..."));
+        progress.Report((60, LocalizationManager.T("Str_WinUpdate_Installing")));
         var installer = session.CreateUpdateInstaller();
         installer.Updates = collection;
         installer.Install();
 
-        progress.Report((100, "Terminé"));
+        progress.Report((100, LocalizationManager.T("Str_Common_Done")));
     });
 
     private static Task<T> RunOnStaThread<T>(Func<T> action)

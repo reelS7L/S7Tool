@@ -1,3 +1,4 @@
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using System.Windows;
 using System.Windows.Media;
@@ -28,13 +29,13 @@ public partial class AppDialogWindow : Window
         if (isConfirm)
         {
             CancelButton.Visibility = Visibility.Visible;
-            ConfirmButton.Content = "Oui";
+            ConfirmButton.Content = LocalizationManager.T("Str_Common_Yes");
             ConfirmButton.Style = (Style)Application.Current.Resources["DangerButtonStyle"];
         }
         else
         {
             CancelButton.Visibility = Visibility.Collapsed;
-            ConfirmButton.Content = "OK";
+            ConfirmButton.Content = LocalizationManager.T("Str_Common_Ok");
         }
     }
 

@@ -26,6 +26,8 @@ public partial class App : Application
 
         base.OnStartup(e);
 
+        LocalizationManager.Initialize();
+
         Services = ConfigureServices();
 
         var mainWindow = Services.GetRequiredService<MainWindow>();

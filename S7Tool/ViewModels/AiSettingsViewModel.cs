@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 
 namespace S7Tool.ViewModels;
@@ -27,19 +28,19 @@ public partial class AiSettingsViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(ApiKey))
         {
-            _dialogService.ShowWarning("Entre une clé API valide.");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_AiSettings_NeedValidKey"));
             return;
         }
 
         try
         {
             _secretsProvider.SetGeminiApiKey(ApiKey.Trim());
-            _dialogService.ShowSuccess("Clé API enregistrée. Elle est immédiatement active.");
+            _dialogService.ShowSuccess(LocalizationManager.T("Str_AiSettings_KeySaved"));
             CloseRequested?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur d'enregistrement");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_AiSettings_SaveErrorTitle"));
         }
     }
 

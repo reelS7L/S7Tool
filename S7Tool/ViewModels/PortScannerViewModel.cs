@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using S7Tool.Helpers;
 using S7Tool.Models;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
@@ -34,12 +35,13 @@ public partial class PortScannerViewModel : ObservableObject
     private bool isScanning;
 
     [ObservableProperty]
-    private string statusText = "Prêt.";
+    private string statusText = "";
 
     public PortScannerViewModel(IPortScannerService scanner, IDialogService dialogService)
     {
         _scanner = scanner;
         _dialogService = dialogService;
+        statusText = LocalizationManager.T("Str_Common_Ready");
     }
 
     [RelayCommand]
@@ -54,20 +56,20 @@ public partial class PortScannerViewModel : ObservableObject
     {
         if (!int.TryParse(StartPort, out int start) || !int.TryParse(EndPort, out int end) || start < 1 || end > 65535 || start > end)
         {
-            _dialogService.ShowWarning("Plage de ports invalide (1-65535).");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_PortScan_InvalidRange"));
             return;
         }
 
         if (string.IsNullOrWhiteSpace(Host))
         {
-            _dialogService.ShowWarning("Indique une adresse IP ou un nom d'hôte.");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_PortScan_NeedHost"));
             return;
         }
 
         OpenPorts.Clear();
         IsScanning = true;
         Progress = 0;
-        StatusText = $"Scan de {Host} ({start}-{end})...";
+        StatusText = string.Format(LocalizationManager.T("Str_PortScan_Scanning"), Host, start, end);
         _cts = new CancellationTokenSource();
 
         var progressReporter = new Progress<int>(p => Progress = p);
@@ -79,15 +81,15 @@ public partial class PortScannerViewModel : ObservableObject
                 System.Windows.Application.Current.Dispatcher.Invoke(() => OpenPorts.Add(result));
             }, progressReporter, _cts.Token);
 
-            StatusText = $"Scan terminé : {OpenPorts.Count} port(s) ouvert(s).";
+            StatusText = string.Format(LocalizationManager.T("Str_PortScan_ScanDone"), OpenPorts.Count);
         }
         catch (OperationCanceledException)
         {
-            StatusText = "Scan interrompu.";
+            StatusText = LocalizationManager.T("Str_PortScan_ScanInterrupted");
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur de scan");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_PortScan_ScanErrorTitle"));
         }
         finally
         {
@@ -109,11 +111,11 @@ public partial class PortScannerViewModel : ObservableObject
     {
         if (OpenPorts.Count == 0)
         {
-            _dialogService.ShowWarning("Aucun résultat à exporter.");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_PortScan_NoResultsToExport"));
             return;
         }
 
-        var dialog = new SaveFileDialog { Filter = "Fichier CSV (*.csv)|*.csv", FileName = "scan_ports.csv" };
+        var dialog = new SaveFileDialog { Filter = LocalizationManager.T("Str_PortScan_CsvFilter"), FileName = "scan_ports.csv" };
         if (dialog.ShowDialog() != true) return;
 
         try
@@ -123,11 +125,11 @@ public partial class PortScannerViewModel : ObservableObject
                 new[] { "Port", "Service" },
                 OpenPorts.Select(p => new[] { p.Port.ToString(), p.ServiceName }));
 
-            _dialogService.ShowSuccess("Export CSV terminé.");
+            _dialogService.ShowSuccess(LocalizationManager.T("Str_PortScan_CsvExportDone"));
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur d'export");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_PortScan_ExportErrorTitle"));
         }
     }
 }

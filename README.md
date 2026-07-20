@@ -1,5 +1,7 @@
 # s7Tool
 
+*[Lire en français](README.fr.md)*
+
 s7Tool is a Windows sysadmin toolbox: a WPF dashboard bundling a set of native, dependency-light utilities for everyday technician and admin work — disk health and space analysis, offline partition management, network/port scanning, process/task management, and a few Windows housekeeping tools — plus an optional AI assistant.
 
 It is built with a strong bias toward native Win32 APIs (P/Invoke) instead of PowerShell or WMI wrappers wherever performance and reliability matter (disk access, SMART/NVMe health), so most tools run fast and work even on locked-down machines.
@@ -26,6 +28,8 @@ The repository contains three .NET 8 projects (no solution file — build each i
 - **Disable Fast Startup** — one-click toggle.
 - **WinPE Disk Manager** — boots a bundled WinPE image to resize/clone partitions offline, including the system volume; live visual feedback so the adjacent free-space bar shrinks correctly while dragging to extend a partition.
 - **AI Helper** — chat assistant backed by Google Gemini, using your own API key (nothing is bundled or proxied).
+
+The app's own UI can be switched between French and English at runtime with the small language toggle button next to the logo on the dashboard.
 
 ## Requirements
 

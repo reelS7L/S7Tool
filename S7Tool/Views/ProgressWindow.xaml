@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindowStyle}"
-        Title="Progression"
+        Title="{DynamicResource Str_Progress_DefaultTitle}"
         Height="220"
         Width="500"
         MinWidth="380"

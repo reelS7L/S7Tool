@@ -62,7 +62,7 @@
                 </Border>
                 <StackPanel>
                     <TextBlock Text="Windows Update" FontSize="20" FontWeight="Bold"/>
-                    <TextBlock Text="Gestion des mises à jour système" FontSize="12" Style="{StaticResource SubtitleTextStyle}"/>
+                    <TextBlock Text="{DynamicResource Str_WinUpdate_Subtitle}" FontSize="12" Style="{StaticResource SubtitleTextStyle}"/>
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -83,8 +83,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Mises à jour importantes" FontWeight="Bold"/>
-                        <Button Grid.Column="1" Content="Tout sélectionner" Style="{StaticResource ToggleLikeButtonStyle}" Command="{Binding SelectAllImportantCommand}"/>
+                        <TextBlock Text="{DynamicResource Str_WinUpdate_Important}" FontWeight="Bold"/>
+                        <Button Grid.Column="1" Content="{DynamicResource Str_Common_SelectAll}" Style="{StaticResource ToggleLikeButtonStyle}" Command="{Binding SelectAllImportantCommand}"/>
                     </Grid>
 
                     <ScrollViewer Height="400">
@@ -107,8 +107,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Facultatives / Pilotes" FontWeight="Bold"/>
-                        <Button Grid.Column="1" Content="Tout sélectionner" Style="{StaticResource ToggleLikeButtonStyle}" Command="{Binding SelectAllOptionalCommand}"/>
+                        <TextBlock Text="{DynamicResource Str_WinUpdate_Optional}" FontWeight="Bold"/>
+                        <Button Grid.Column="1" Content="{DynamicResource Str_Common_SelectAll}" Style="{StaticResource ToggleLikeButtonStyle}" Command="{Binding SelectAllOptionalCommand}"/>
                     </Grid>
 
                     <ScrollViewer Height="400">
@@ -133,15 +133,15 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <ToggleButton Content="Autres produits Microsoft"
+                <ToggleButton Content="{DynamicResource Str_WinUpdate_OtherMsProducts}"
                               Width="220" Height="32"
                               VerticalAlignment="Center"
                               Style="{StaticResource SwitchToggleButtonStyle}"
                               IsChecked="{Binding IsMicrosoftUpdateEnabled, Mode=OneWay}"
                               Command="{Binding ToggleMicrosoftUpdateCommand}"/>
 
-                <Button Grid.Column="1" Content="Rechercher" Margin="10,0" Style="{StaticResource ToggleLikeButtonStyle}" Command="{Binding SearchUpdatesCommand}"/>
-                <Button Grid.Column="2" Content="Installer" Style="{StaticResource SuccessButtonStyle}" Command="{Binding InstallUpdatesCommand}"/>
+                <Button Grid.Column="1" Content="{DynamicResource Str_WinUpdate_Search}" Margin="10,0" Style="{StaticResource ToggleLikeButtonStyle}" Command="{Binding SearchUpdatesCommand}"/>
+                <Button Grid.Column="2" Content="{DynamicResource Str_WinUpdate_Install}" Style="{StaticResource SuccessButtonStyle}" Command="{Binding InstallUpdatesCommand}"/>
 
             </Grid>
         </Border>

@@ -71,7 +71,7 @@ public class AppInstallService : IAppInstallService
     {
         foreach (var app in apps)
         {
-            log?.Invoke($"Installation : {app.Name}");
+            log?.Invoke($"{LocalizationManager.T("Str_Install_LogInstalling")} : {app.Name}");
 
             try
             {
@@ -100,7 +100,7 @@ public class AppInstallService : IAppInstallService
 
                 if (process == null)
                 {
-                    log?.Invoke($"{app.Name} : winget introuvable");
+                    log?.Invoke(string.Format(LocalizationManager.T("Str_Install_LogWingetNotFound"), app.Name));
                     continue;
                 }
 
@@ -109,11 +109,11 @@ public class AppInstallService : IAppInstallService
 
                 if (process.ExitCode == 0)
                 {
-                    log?.Invoke($"{app.Name} : installé avec succès");
+                    log?.Invoke(string.Format(LocalizationManager.T("Str_Install_LogSuccess"), app.Name));
                 }
                 else
                 {
-                    log?.Invoke($"{app.Name} : échec (code {process.ExitCode})");
+                    log?.Invoke(string.Format(LocalizationManager.T("Str_Install_LogFailure"), app.Name, process.ExitCode));
 
                     string lastLine = stdout
                         .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -125,7 +125,7 @@ public class AppInstallService : IAppInstallService
             }
             catch (Exception ex)
             {
-                log?.Invoke($"Erreur - {app.Name} : {ex.Message}");
+                log?.Invoke(string.Format(LocalizationManager.T("Str_Install_LogError"), app.Name, ex.Message));
             }
         }
     }

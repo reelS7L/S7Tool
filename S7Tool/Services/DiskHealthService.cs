@@ -26,7 +26,7 @@ public class DiskHealthService : IDiskHealthService
             return new DiskHealthRow
             {
                 DiskNumber = d.DiskNumber,
-                BusType = d.BusType ?? "Inconnu",
+                BusType = d.BusType ?? LocalizationManager.T("Str_DiskHealth_UnknownBus"),
                 SizeBytes = d.SizeBytes,
                 DriveLetters = string.Join(", ", letters.Select(l => l + ":")),
                 FreeBytes = letters.Count > 0 ? GetTotalFreeSpace(letters) : null,

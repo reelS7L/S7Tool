@@ -64,7 +64,7 @@ public class PortScannerService : IPortScannerService
 
             if (winner == connectTask && client.Connected)
             {
-                var serviceName = WellKnownPorts.TryGetValue(port, out var name) ? name : "Inconnu";
+                var serviceName = WellKnownPorts.TryGetValue(port, out var name) ? name : LocalizationManager.T("Str_PortScan_Unknown");
                 onPortOpen(new PortScanResult { Port = port, ServiceName = serviceName });
             }
         }

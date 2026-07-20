@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:S7Tool.Controls"
         Style="{StaticResource AppWindowStyle}"
-        Title="Analyseur d'espace disque"
+        Title="{DynamicResource Str_DiskSpace_Title}"
         Width="1160"
         Height="760"
         MinWidth="900"
@@ -48,14 +48,14 @@
         </Style>
 
         <ContextMenu x:Key="SpaceItemContextMenu">
-            <MenuItem Header="Ouvrir" Command="{Binding PlacementTarget.DataContext.OpenSelectedCommand, RelativeSource={RelativeSource Self}}"/>
-            <MenuItem Header="Afficher dans l'Explorateur" Command="{Binding PlacementTarget.DataContext.ShowInExplorerCommand, RelativeSource={RelativeSource Self}}"/>
-            <MenuItem Header="Copier le chemin" Command="{Binding PlacementTarget.DataContext.CopyPathCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_Open}" Command="{Binding PlacementTarget.DataContext.OpenSelectedCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_ShowInExplorer}" Command="{Binding PlacementTarget.DataContext.ShowInExplorerCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_CopyPath}" Command="{Binding PlacementTarget.DataContext.CopyPathCommand, RelativeSource={RelativeSource Self}}"/>
             <Separator/>
-            <MenuItem Header="Rafraîchir ce dossier" Command="{Binding PlacementTarget.DataContext.RefreshSelectedFolderCommand, RelativeSource={RelativeSource Self}}"/>
-            <MenuItem Header="Propriétés" Command="{Binding PlacementTarget.DataContext.ShowPropertiesCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_RefreshFolder}" Command="{Binding PlacementTarget.DataContext.RefreshSelectedFolderCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_Properties}" Command="{Binding PlacementTarget.DataContext.ShowPropertiesCommand, RelativeSource={RelativeSource Self}}"/>
             <Separator/>
-            <MenuItem Header="Supprimer (corbeille)" Command="{Binding PlacementTarget.DataContext.DeleteSelectedCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_DeleteToRecycleBin}" Command="{Binding PlacementTarget.DataContext.DeleteSelectedCommand, RelativeSource={RelativeSource Self}}"/>
         </ContextMenu>
     </Window.Resources>
 
@@ -83,8 +83,8 @@
                 <TextBlock Text="&#xE9D2;" FontFamily="{StaticResource IconFontFamily}" FontSize="20" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="Analyseur d'espace disque" Style="{StaticResource PageTitleTextStyle}"/>
-                <TextBlock Text="Scan récursif, navigation par taille" Style="{StaticResource SubtitleTextStyle}" Margin="0,4,0,0"/>
+                <TextBlock Text="{DynamicResource Str_DiskSpace_Title}" Style="{StaticResource PageTitleTextStyle}"/>
+                <TextBlock Text="{DynamicResource Str_DiskSpace_Subtitle}" Style="{StaticResource SubtitleTextStyle}" Margin="0,4,0,0"/>
             </StackPanel>
         </StackPanel>
 
@@ -99,14 +99,14 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.Column="0" Text="{Binding RootPath, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
-                    <Button Grid.Column="2" Content="Parcourir..." Style="{StaticResource SecondaryButtonStyle}" Command="{Binding BrowseFolderCommand}"/>
-                    <Button Grid.Column="4" Content="Analyser" Command="{Binding ScanCommand}"
+                    <Button Grid.Column="2" Content="{DynamicResource Str_DiskSpace_Browse}" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding BrowseFolderCommand}"/>
+                    <Button Grid.Column="4" Content="{DynamicResource Str_DiskSpace_Scan}" Command="{Binding ScanCommand}"
                             Visibility="{Binding IsScanning, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
-                    <Button Grid.Column="4" Content="Arrêter" Style="{StaticResource DangerButtonStyle}" Command="{Binding StopScanCommand}"
+                    <Button Grid.Column="4" Content="{DynamicResource Str_Common_Stop}" Style="{StaticResource DangerButtonStyle}" Command="{Binding StopScanCommand}"
                             Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 </Grid>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Disque entier : " Style="{StaticResource SubtitleTextStyle}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Text="{DynamicResource Str_DiskSpace_WholeDrive}" Style="{StaticResource SubtitleTextStyle}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <ItemsControl ItemsSource="{Binding AvailableDrives}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -128,31 +128,31 @@
         <UniformGrid Grid.Row="4" Columns="5" Rows="1">
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,8,0" Padding="12">
                 <StackPanel>
-                    <TextBlock Text="Capacité du disque" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskSpace_DriveCapacity}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding DriveTotalGb, StringFormat={}{0:0.#} Go}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource CardBorderStyle}" Margin="4,0" Padding="12">
                 <StackPanel>
-                    <TextBlock Text="Utilisé" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskSpace_Used}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding DriveUsedGb, StringFormat={}{0:0.#} Go}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource CardBorderStyle}" Margin="4,0" Padding="12">
                 <StackPanel>
-                    <TextBlock Text="Libre" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskSpace_Free}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding DriveFreeGb, StringFormat={}{0:0.#} Go}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource CardBorderStyle}" Margin="4,0" Padding="12">
                 <StackPanel>
-                    <TextBlock Text="Fichiers / Dossiers" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskSpace_FilesFolders}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding ScannedFileCount, StringFormat={}{0:N0}}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource CardBorderStyle}" Margin="8,0,0,0" Padding="12">
                 <StackPanel>
-                    <TextBlock Text="Durée du scan" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskSpace_ScanDuration}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding ScanDurationDisplay}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
@@ -187,9 +187,9 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <TextBox Grid.Column="2" Width="140" Margin="0,0,8,0" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Tag="Nom..."/>
+            <TextBox Grid.Column="2" Width="140" Margin="0,0,8,0" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Tag="{DynamicResource Str_DiskSpace_NameFilterTag}"/>
             <TextBox Grid.Column="3" Width="80" Margin="0,0,8,0" Text="{Binding FilterExtension, UpdateSourceTrigger=PropertyChanged}"/>
-            <Button Grid.Column="4" Content="Remonter" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding NavigateUpCommand}"/>
+            <Button Grid.Column="4" Content="{DynamicResource Str_DiskSpace_MoveUp}" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding NavigateUpCommand}"/>
         </Grid>
 
         <Grid Grid.Row="10">
@@ -200,15 +200,15 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <RadioButton GroupName="SpaceViewMode" Style="{StaticResource ViewModeToggleStyle}" Content="Liste"
+                <RadioButton GroupName="SpaceViewMode" Style="{StaticResource ViewModeToggleStyle}" Content="{DynamicResource Str_DiskSpace_ViewList}"
                              IsChecked="{Binding ViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Liste}"/>
-                <RadioButton GroupName="SpaceViewMode" Style="{StaticResource ViewModeToggleStyle}" Content="Carrés imbriqués"
+                <RadioButton GroupName="SpaceViewMode" Style="{StaticResource ViewModeToggleStyle}" Content="{DynamicResource Str_DiskSpace_ViewTreemap}"
                              IsChecked="{Binding ViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Treemap}"/>
-                <RadioButton GroupName="SpaceViewMode" Style="{StaticResource ViewModeToggleStyle}" Content="Diagramme"
+                <RadioButton GroupName="SpaceViewMode" Style="{StaticResource ViewModeToggleStyle}" Content="{DynamicResource Str_DiskSpace_ViewChart}"
                              IsChecked="{Binding ViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Diagramme}"/>
             </StackPanel>
 
-            <Button Grid.Column="2" Content="Actualiser" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding RefreshDisplayCommand}"/>
+            <Button Grid.Column="2" Content="{DynamicResource Str_Common_Refresh}" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding RefreshDisplayCommand}"/>
         </Grid>
 
         <Grid Grid.Row="12">
@@ -220,7 +220,7 @@
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding NavigateIntoCommand}" CommandParameter="{Binding SelectedItem}"/>
                     </DataGrid.InputBindings>
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Nom" Width="2.4*" SortMemberPath="Name">
+                        <DataGridTemplateColumn Header="{DynamicResource Str_DiskSpace_ColName}" Width="2.4*" SortMemberPath="Name">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -231,8 +231,8 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Taille" Binding="{Binding SizeDisplay}" SortMemberPath="SizeBytes" Width="1*"/>
-                        <DataGridTemplateColumn Header="% du dossier" Width="1.4*" SortMemberPath="PercentOfParent">
+                        <DataGridTextColumn Header="{DynamicResource Str_DiskSpace_ColSize}" Binding="{Binding SizeDisplay}" SortMemberPath="SizeBytes" Width="1*"/>
+                        <DataGridTemplateColumn Header="{DynamicResource Str_DiskSpace_ColPercentOfFolder}" Width="1.4*" SortMemberPath="PercentOfParent">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid>
@@ -243,8 +243,8 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Type" Binding="{Binding Extension}" Width="0.8*"/>
-                        <DataGridTextColumn Header="Modifié" Binding="{Binding LastWriteTimeUtc, StringFormat={}{0:dd/MM/yyyy}}" Width="1*"/>
+                        <DataGridTextColumn Header="{DynamicResource Str_DiskSpace_ColType}" Binding="{Binding Extension}" Width="0.8*"/>
+                        <DataGridTextColumn Header="{DynamicResource Str_DiskSpace_ColModified}" Binding="{Binding LastWriteTimeUtc, StringFormat={}{0:dd/MM/yyyy}}" Width="1*"/>
                     </DataGrid.Columns>
                     <DataGrid.ContextMenu>
                         <ContextMenu>

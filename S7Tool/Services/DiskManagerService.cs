@@ -54,7 +54,7 @@ public class DiskManagerService : IDiskManagerService
     {
         if (!force && IsOfflineEnvironmentReady && !await IsOfflineEnvironmentUpdateAvailableAsync())
         {
-            onLog("Environnement hors ligne déjà prêt et à jour, rien à faire.");
+            onLog(LocalizationManager.T("Str_DiskMgr_AlreadyReady"));
             return;
         }
 
@@ -65,7 +65,7 @@ public class DiskManagerService : IDiskManagerService
 
         if (File.Exists(bundledWimPath) && File.Exists(bundledSdiPath))
         {
-            onLog("Copie de l'image hors ligne embarquée...");
+            onLog(LocalizationManager.T("Str_DiskMgr_CopyingImage"));
             File.Copy(bundledWimPath, Path.Combine(OfflineRootDir, "boot.wim"), overwrite: true);
             File.Copy(bundledSdiPath, Path.Combine(OfflineRootDir, "boot.sdi"), overwrite: true);
 
@@ -75,11 +75,11 @@ public class DiskManagerService : IDiskManagerService
         }
         else
         {
-            onLog("Image non trouvée dans l'installation, téléchargement depuis la dernière version publiée...");
+            onLog(LocalizationManager.T("Str_DiskMgr_ImageNotFoundDownloading"));
             await DownloadOfflineEnvironmentAsync(onLog, cancellationToken);
         }
 
-        onLog($"Environnement hors ligne prêt : {OfflineRootDir}");
+        onLog(string.Format(LocalizationManager.T("Str_DiskMgr_EnvReadyAt"), OfflineRootDir));
     }
 
     private static async Task DownloadOfflineEnvironmentAsync(Action<string> onLog, CancellationToken cancellationToken)
@@ -95,15 +95,14 @@ public class DiskManagerService : IDiskManagerService
         })
         {
             string url = $"https://github.com/{GitHubRepo}/releases/latest/download/winpe-{urlSuffix}";
-            onLog($"Téléchargement de {fileName}...");
+            onLog(string.Format(LocalizationManager.T("Str_DiskMgr_Downloading"), fileName));
 
             using var response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
                 if (fileName == "version.txt") continue;
                 throw new InvalidOperationException(
-                    $"Impossible de télécharger {fileName} depuis la dernière release GitHub (code {(int)response.StatusCode}). " +
-                    "Vérifie la connexion internet, ou réinstalle l'application avec le paquet complet (.rar).");
+                    string.Format(LocalizationManager.T("Str_DiskMgr_DownloadFailed"), fileName, (int)response.StatusCode));
             }
 
             await using var fileStream = File.Create(Path.Combine(OfflineRootDir, fileName));
@@ -114,7 +113,7 @@ public class DiskManagerService : IDiskManagerService
     public async Task LaunchOfflineDiskManagerAsync(Action<string> onLog, CancellationToken cancellationToken)
     {
         if (!IsOfflineEnvironmentReady)
-            throw new InvalidOperationException("L'environnement hors ligne n'a pas encore été préparé.");
+            throw new InvalidOperationException(LocalizationManager.T("Str_DiskMgr_NotPreparedYet"));
 
         string script = @"
 $ErrorActionPreference = 'Stop'
@@ -165,7 +164,7 @@ shutdown /r /t 5
             string? errorLine = null;
 
             process.OutputDataReceived += (_, e) => { if (!string.IsNullOrEmpty(e.Data)) onLog(e.Data); };
-            process.ErrorDataReceived += (_, e) => { if (!string.IsNullOrEmpty(e.Data)) { errorLine = e.Data; onLog($"ERREUR : {e.Data}"); } };
+            process.ErrorDataReceived += (_, e) => { if (!string.IsNullOrEmpty(e.Data)) { errorLine = e.Data; onLog(string.Format(LocalizationManager.T("Str_DiskMgr_ErrorLogPrefix"), e.Data)); } };
 
             process.Start();
             process.BeginOutputReadLine();
@@ -179,7 +178,7 @@ shutdown /r /t 5
             await process.WaitForExitAsync(cancellationToken);
 
             if (process.ExitCode != 0)
-                throw new InvalidOperationException(errorLine ?? $"Commande PowerShell échouée (code {process.ExitCode}).");
+                throw new InvalidOperationException(errorLine ?? string.Format(LocalizationManager.T("Str_DiskMgr_PsCommandFailed"), process.ExitCode));
         }
         finally
         {

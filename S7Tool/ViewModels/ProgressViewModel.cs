@@ -1,17 +1,18 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using S7Tool.Services;
 
 namespace S7Tool.ViewModels;
 
 public partial class ProgressViewModel : ObservableObject, IProgress<(int Percent, string Status)>
 {
     [ObservableProperty]
-    private string title = "Traitement en cours...";
+    private string title = LocalizationManager.T("Str_Progress_Processing");
 
     [ObservableProperty]
     private double progressValue;
 
     [ObservableProperty]
-    private string statusText = "Initialisation...";
+    private string statusText = LocalizationManager.T("Str_Progress_Initializing");
 
     [ObservableProperty]
     private string logText = "";

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using System.Collections.ObjectModel;
 
@@ -25,12 +26,14 @@ public partial class DiskManagerViewModel : ObservableObject
     private bool isBusy;
 
     [ObservableProperty]
-    private string statusText = "Prêt.";
+    private string statusText = "";
 
     public DiskManagerViewModel(IDiskManagerService diskManager, IDialogService dialogService)
     {
         _diskManager = diskManager;
         _dialogService = dialogService;
+
+        statusText = LocalizationManager.T("Str_Common_Ready");
 
         _ = RefreshStatusAsync();
     }
@@ -41,8 +44,8 @@ public partial class DiskManagerViewModel : ObservableObject
         IsOfflineEnvironmentUpdateAvailable = await _diskManager.IsOfflineEnvironmentUpdateAvailableAsync();
 
         StatusText = IsOfflineEnvironmentReady
-            ? (IsOfflineEnvironmentUpdateAvailable ? "Une mise à jour de l'environnement hors ligne est disponible." : "Environnement hors ligne prêt.")
-            : "Environnement hors ligne non préparé.";
+            ? LocalizationManager.T(IsOfflineEnvironmentUpdateAvailable ? "Str_DiskMgr_UpdateAvailable" : "Str_DiskMgr_EnvReady")
+            : LocalizationManager.T("Str_DiskMgr_EnvNotPrepared");
     }
 
     private bool CanUseOfflineEnvironment() => !IsBusy;
@@ -52,15 +55,15 @@ public partial class DiskManagerViewModel : ObservableObject
     {
         var confirmed = _dialogService.Confirm(
             IsOfflineEnvironmentReady
-                ? "Mettre à jour l'environnement hors ligne (WinPE) sur ce poste ?"
-                : "Préparer l'environnement hors ligne (WinPE) sur ce poste ? Rapide (copie ou téléchargement de fichiers), à faire une seule fois par poste.",
-            "Préparer l'environnement hors ligne");
+                ? LocalizationManager.T("Str_DiskMgr_ConfirmUpdate")
+                : LocalizationManager.T("Str_DiskMgr_ConfirmPrepare"),
+            LocalizationManager.T("Str_DiskMgr_PrepareTitle"));
 
         if (!confirmed) return;
 
         OfflineEnvironmentLogs.Clear();
         IsBusy = true;
-        StatusText = "Préparation de l'environnement hors ligne...";
+        StatusText = LocalizationManager.T("Str_DiskMgr_Preparing");
         _offlineEnvironmentCts = new CancellationTokenSource();
 
         try
@@ -70,16 +73,16 @@ public partial class DiskManagerViewModel : ObservableObject
                 _offlineEnvironmentCts.Token);
 
             await RefreshStatusAsync();
-            _dialogService.ShowSuccess("Environnement hors ligne prêt.");
+            _dialogService.ShowSuccess(LocalizationManager.T("Str_DiskMgr_EnvReady"));
         }
         catch (OperationCanceledException)
         {
-            StatusText = "Préparation de l'environnement hors ligne interrompue.";
+            StatusText = LocalizationManager.T("Str_DiskMgr_PreparationInterrupted");
         }
         catch (Exception ex)
         {
-            StatusText = "Échec de la préparation de l'environnement hors ligne.";
-            _dialogService.ShowError(ex.Message, "Erreur");
+            StatusText = LocalizationManager.T("Str_DiskMgr_PreparationFailed");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_Dialog_Error"));
         }
         finally
         {
@@ -94,15 +97,13 @@ public partial class DiskManagerViewModel : ObservableObject
     {
         if (!IsOfflineEnvironmentReady)
         {
-            _dialogService.ShowWarning("Prépare d'abord l'environnement hors ligne.");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_DiskMgr_PrepareFirst"));
             return;
         }
 
         var confirmed = _dialogService.Confirm(
-            "Le poste va redémarrer immédiatement vers le gestionnaire de disques hors ligne.\n\n" +
-            "Ferme tout travail en cours avant de continuer : ce démarrage est à usage unique, le poste " +
-            "revient automatiquement sous Windows une fois le gestionnaire de disques fermé.",
-            "Lancer le gestionnaire de disques hors ligne");
+            LocalizationManager.T("Str_DiskMgr_ConfirmLaunch"),
+            LocalizationManager.T("Str_DiskMgr_LaunchTitle"));
 
         if (!confirmed) return;
 
@@ -116,7 +117,7 @@ public partial class DiskManagerViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_Dialog_Error"));
         }
         finally
         {

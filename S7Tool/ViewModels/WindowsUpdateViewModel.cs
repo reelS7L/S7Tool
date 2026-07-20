@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using S7Tool.Models;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using S7Tool.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,7 +60,7 @@ public partial class WindowsUpdateViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur toggle");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_WinUpdate_ToggleErrorTitle"));
         }
     }
 
@@ -76,7 +77,7 @@ public partial class WindowsUpdateViewModel : ObservableObject
 
             if (updates.Count == 0)
             {
-                _dialogService.ShowInfo("Aucune mise à jour trouvée.");
+                _dialogService.ShowInfo(LocalizationManager.T("Str_WinUpdate_NoneFound"));
                 return;
             }
 
@@ -88,11 +89,11 @@ public partial class WindowsUpdateViewModel : ObservableObject
                     OptionalUpdates.Add(update);
             }
 
-            _dialogService.ShowSuccess($"Mises à jour trouvées : {updates.Count}");
+            _dialogService.ShowSuccess(string.Format(LocalizationManager.T("Str_WinUpdate_FoundCount"), updates.Count));
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur recherche");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_WinUpdate_SearchErrorTitle"));
         }
         finally
         {
@@ -109,7 +110,7 @@ public partial class WindowsUpdateViewModel : ObservableObject
 
         if (selected.Count == 0)
         {
-            _dialogService.ShowWarning("Aucune mise à jour sélectionnée.");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_WinUpdate_NoneSelected"));
             return;
         }
 
@@ -122,12 +123,12 @@ public partial class WindowsUpdateViewModel : ObservableObject
             await _windowsUpdateService.InstallUpdatesAsync(selected, progressViewModel);
             await Task.Delay(600);
             progressWindow.Close();
-            _dialogService.ShowSuccess("Installation terminée !");
+            _dialogService.ShowSuccess(LocalizationManager.T("Str_WinUpdate_InstallDone"));
         }
         catch (Exception ex)
         {
             progressWindow.Close();
-            _dialogService.ShowError(ex.Message, "Erreur installation");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_WinUpdate_InstallErrorTitle"));
         }
     }
 

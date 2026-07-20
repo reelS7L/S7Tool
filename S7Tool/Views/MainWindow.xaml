@@ -38,8 +38,17 @@
                             Margin="14,0,0,0"
                             VerticalAlignment="Center">
                     <TextBlock Text="s7Tool" Style="{StaticResource PageTitleTextStyle}"/>
-                    <TextBlock Text="Menu système + gestion avancée" Style="{StaticResource SubtitleTextStyle}"/>
+                    <TextBlock Text="{DynamicResource Str_Main_Subtitle}" Style="{StaticResource SubtitleTextStyle}"/>
                 </StackPanel>
+
+                <Button Grid.Column="1"
+                        Width="46" Height="30"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Content="{DynamicResource Str_LangToggleLabel}"
+                        FontSize="12"
+                        Command="{Binding ToggleLanguageCommand}"/>
 
             </Grid>
         </Border>
@@ -65,7 +74,7 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
 
-                        <TextBlock Text="Actions" FontSize="16" FontWeight="Bold" Margin="0,0,0,14"/>
+                        <TextBlock Text="{DynamicResource Str_Main_Actions}" FontSize="16" FontWeight="Bold" Margin="0,0,0,14"/>
 
                         <WrapPanel>
 
@@ -74,8 +83,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE8F2;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="IA Helper" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Assistant conversationnel" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileAiTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileAiSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -84,8 +93,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE74D;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Désinstaller des applications" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Sélection multiple, mode silencieux" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileUninstallTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileUninstallSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -94,8 +103,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE896;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Installer des applications" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Recherche et installation via winget" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileInstallTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileInstallSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -104,8 +113,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE713;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Désactiver démarrage rapide" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Fast Startup Windows" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileFastStartupTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileFastStartupSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -114,8 +123,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE70F;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Renommer le PC" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Nom de la machine" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileRenameTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileRenameSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -124,8 +133,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE72C;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Windows Update Manager" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Recherche et installation" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileWinUpdateTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileWinUpdateSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -134,8 +143,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE968;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Scanner réseau" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Découverte des appareils du réseau" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileNetScanTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileNetScanSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -144,8 +153,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE99A;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Scanner de ports" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Ports TCP ouverts sur un hôte" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TilePortScanTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TilePortScanSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -154,8 +163,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xEDA2;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Gestionnaire de disques" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Redimensionnement et clonage" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileDiskMgrTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileDiskMgrSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -164,8 +173,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE9D9;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Santé des disques" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="SMART/NVMe bas niveau" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileDiskHealthTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileDiskHealthSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -174,8 +183,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}">
                                         <TextBlock Text="&#xE9D2;" Style="{StaticResource DashboardTileGlyphStyle}"/>
                                     </Border>
-                                    <TextBlock Text="Analyseur d'espace disque" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Scan et navigation par taille" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileDiskSpaceTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileDiskSpaceSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -184,8 +193,8 @@
                                     <Border Style="{StaticResource DashboardTileIconStyle}" Background="{StaticResource DangerBrush}">
                                         <TextBlock Text="&#xE711;" Style="{StaticResource DashboardTileGlyphStyle}" Foreground="White"/>
                                     </Border>
-                                    <TextBlock Text="Quitter" Style="{StaticResource DashboardTileTitleStyle}"/>
-                                    <TextBlock Text="Fermer l'application" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileQuitTitle}" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="{DynamicResource Str_Main_TileQuitSubtitle}" Style="{StaticResource DashboardTileSubtitleStyle}"/>
                                 </StackPanel>
                             </Button>
 
@@ -223,10 +232,10 @@
                                 Padding="12,0"
                                 Style="{StaticResource SecondaryButtonStyle}"
                                 Command="{Binding RefreshProcessesCommand}"
-                                ToolTip="Actualiser la liste des processus">
+                                ToolTip="{DynamicResource Str_Main_RefreshProcessesTooltip}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="&#xE72C;" FontFamily="{StaticResource IconFontFamily}" FontSize="13" VerticalAlignment="Center"/>
-                                <TextBlock Text="Actualiser" FontSize="12" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource Str_Common_Refresh}" FontSize="12" Margin="6,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
@@ -281,7 +290,7 @@
                                                     Padding="0"
                                                     FontWeight="Bold"
                                                     FontSize="12"
-                                                    ToolTip="Arrêter ce processus"
+                                                    ToolTip="{DynamicResource Str_Main_KillProcessTooltip}"
                                                     Command="{Binding DataContext.KillProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding Id}"
                                                     Content="X"/>

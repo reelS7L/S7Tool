@@ -7,15 +7,15 @@ namespace S7Tool.Services;
 
 public class DialogService : IDialogService
 {
-    public void ShowInfo(string message, string title = "Information") => Show(title, message, DialogSeverity.Info, isConfirm: false);
+    public void ShowInfo(string message, string? title = null) => Show(title ?? LocalizationManager.T("Str_Dialog_Info"), message, DialogSeverity.Info, isConfirm: false);
 
-    public void ShowSuccess(string message, string title = "Succès") => Show(title, message, DialogSeverity.Success, isConfirm: false);
+    public void ShowSuccess(string message, string? title = null) => Show(title ?? LocalizationManager.T("Str_Dialog_Success"), message, DialogSeverity.Success, isConfirm: false);
 
-    public void ShowWarning(string message, string title = "Attention") => Show(title, message, DialogSeverity.Warning, isConfirm: false);
+    public void ShowWarning(string message, string? title = null) => Show(title ?? LocalizationManager.T("Str_Dialog_Warning"), message, DialogSeverity.Warning, isConfirm: false);
 
-    public void ShowError(string message, string title = "Erreur") => Show(title, message, DialogSeverity.Error, isConfirm: false);
+    public void ShowError(string message, string? title = null) => Show(title ?? LocalizationManager.T("Str_Dialog_Error"), message, DialogSeverity.Error, isConfirm: false);
 
-    public bool Confirm(string message, string title = "Confirmation") => Show(title, message, DialogSeverity.Warning, isConfirm: true);
+    public bool Confirm(string message, string? title = null) => Show(title ?? LocalizationManager.T("Str_Dialog_Confirmation"), message, DialogSeverity.Warning, isConfirm: true);
 
     private static bool Show(string title, string message, DialogSeverity severity, bool isConfirm)
     {

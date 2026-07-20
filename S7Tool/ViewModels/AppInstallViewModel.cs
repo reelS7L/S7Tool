@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using S7Tool.Models;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using System.Collections.ObjectModel;
 
@@ -24,7 +25,7 @@ public partial class AppInstallViewModel : ObservableObject
     private bool isSearching;
 
     [ObservableProperty]
-    private string installButtonLabel = "Installer (0)";
+    private string installButtonLabel = "";
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(InstallSelectedCommand))]
@@ -37,6 +38,8 @@ public partial class AppInstallViewModel : ObservableObject
 
         foreach (var app in _installService.GetPopularApps())
             PopularApps.Add(app);
+
+        UpdateButtonLabel();
     }
 
     [RelayCommand(CanExecute = nameof(CanSearch))]
@@ -50,7 +53,7 @@ public partial class AppInstallViewModel : ObservableObject
             SearchResults.Add(app);
 
         if (results.Count == 0)
-            AddLog($"Aucun résultat pour \"{SearchText}\"");
+            AddLog(string.Format(LocalizationManager.T("Str_Install_NoResults"), SearchText));
 
         UpdateButtonLabel();
         IsSearching = false;
@@ -84,16 +87,16 @@ public partial class AppInstallViewModel : ObservableObject
 
         if (selected.Count == 0)
         {
-            _dialogService.ShowWarning("Aucune sélection");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_Dialog_NoSelection"));
             return;
         }
 
         IsBusy = true;
-        AddLog($"Installation de {selected.Count} application(s)...");
+        AddLog(string.Format(LocalizationManager.T("Str_Install_Installing"), selected.Count));
 
         await _installService.InstallAppsAsync(selected, AddLog);
 
-        AddLog("Terminé");
+        AddLog(LocalizationManager.T("Str_Common_Done"));
         ClearSelection();
         IsBusy = false;
     }
@@ -103,7 +106,7 @@ public partial class AppInstallViewModel : ObservableObject
     private void UpdateButtonLabel()
     {
         int count = PopularApps.Count(a => a.IsSelected) + SearchResults.Count(a => a.IsSelected);
-        InstallButtonLabel = $"Installer ({count})";
+        InstallButtonLabel = $"{LocalizationManager.T("Str_Install_ButtonLabel")} ({count})";
     }
 
     private void AddLog(string message) => Logs.Add($"[{DateTime.Now:HH:mm:ss}] {message}");

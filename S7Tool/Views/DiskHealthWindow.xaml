@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:S7Tool.Controls"
         Style="{StaticResource AppWindowStyle}"
-        Title="Santé des disques (SMART/NVMe)"
+        Title="{DynamicResource Str_DiskHealth_Title}"
         Width="1160"
         Height="760"
         MinWidth="900"
@@ -31,41 +31,41 @@
                     <TextBlock Text="&#xE9D9;" FontFamily="{StaticResource IconFontFamily}" FontSize="20" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Border>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Santé des disques" Style="{StaticResource PageTitleTextStyle}"/>
-                    <TextBlock Text="Lecture SMART/NVMe bas niveau, sans PowerShell ni WMI" Style="{StaticResource SubtitleTextStyle}" Margin="0,4,0,0"/>
+                    <TextBlock Text="{DynamicResource Str_DiskHealth_Header}" Style="{StaticResource PageTitleTextStyle}"/>
+                    <TextBlock Text="{DynamicResource Str_DiskHealth_Subtitle}" Style="{StaticResource SubtitleTextStyle}" Margin="0,4,0,0"/>
                 </StackPanel>
             </StackPanel>
-            <Button Grid.Column="1" Content="Actualiser" Style="{StaticResource SecondaryButtonStyle}" VerticalAlignment="Center" Command="{Binding RefreshCommand}"/>
+            <Button Grid.Column="1" Content="{DynamicResource Str_Common_Refresh}" Style="{StaticResource SecondaryButtonStyle}" VerticalAlignment="Center" Command="{Binding RefreshCommand}"/>
         </Grid>
 
         <UniformGrid Grid.Row="2" Columns="5" Rows="1">
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,8,0" Padding="14">
                 <StackPanel>
-                    <TextBlock Text="Disques détectés" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskHealth_DetectedDisks}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding DiskCount}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource CardBorderStyle}" Margin="4,0" Padding="14">
                 <StackPanel>
-                    <TextBlock Text="Capacité totale" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskHealth_TotalCapacity}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding TotalCapacityGb, StringFormat={}{0:0.#} Go}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource CardBorderStyle}" Margin="4,0" Padding="14">
                 <StackPanel>
-                    <TextBlock Text="Espace libre total" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskHealth_TotalFree}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding TotalFreeGb, StringFormat={}{0:0.#} Go}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource CardBorderStyle}" Margin="4,0" Padding="14">
                 <StackPanel>
-                    <TextBlock Text="Température moyenne" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskHealth_AvgTemperature}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding AverageTemperature, StringFormat={}{0:0.#} °C}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource CardBorderStyle}" Margin="8,0,0,0" Padding="14">
                 <StackPanel>
-                    <TextBlock Text="Disques en alerte" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource Str_DiskHealth_DisksInAlert}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                     <TextBlock Text="{Binding AlertCount}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -93,19 +93,19 @@
                 <DataGrid ItemsSource="{Binding Disks}" SelectedItem="{Binding SelectedDisk}"
                           AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" HeadersVisibility="Column">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Disque" Binding="{Binding DiskNumber}" Width="0.5*"/>
-                        <DataGridTextColumn Header="Modèle" Binding="{Binding Model}" Width="2*"/>
+                        <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColDisk}" Binding="{Binding DiskNumber}" Width="0.5*"/>
+                        <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColModel}" Binding="{Binding Model}" Width="2*"/>
                         <DataGridTextColumn Header="Bus" Binding="{Binding BusType}" Width="0.8*"/>
-                        <DataGridTextColumn Header="Lettres" Binding="{Binding DriveLetters}" Width="0.8*"/>
-                        <DataGridTextColumn Header="Libre" Binding="{Binding FreeDisplay}" Width="0.9*"/>
-                        <DataGridTemplateColumn Header="Santé" Width="0.9*">
+                        <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColLetters}" Binding="{Binding DriveLetters}" Width="0.8*"/>
+                        <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColFree}" Binding="{Binding FreeDisplay}" Width="0.9*"/>
+                        <DataGridTemplateColumn Header="{DynamicResource Str_DiskHealth_ColHealth}" Width="0.9*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding HealthTier}" Foreground="{Binding HealthTier, Converter={StaticResource HealthTierToBrushConverter}}" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Temp." Binding="{Binding TemperatureDisplay}" Width="0.7*"/>
+                        <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColTemp}" Binding="{Binding TemperatureDisplay}" Width="0.7*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>
@@ -115,9 +115,9 @@
 
                     <Border Style="{StaticResource CardBorderStyle}" Padding="16">
                         <StackPanel>
-                            <TextBlock Text="{Binding SelectedDisk.DisplayName, TargetNullValue='Aucun disque sélectionné'}" FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
+                            <TextBlock Text="{Binding SelectedDisk.DisplayName, TargetNullValue={DynamicResource Str_DiskHealth_NoDiskSelected}}" FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
                             <TextBlock Style="{StaticResource SubtitleTextStyle}" FontSize="11" Margin="0,0,0,4">
-                                <Run Text="Série : "/><Run Text="{Binding SelectedDisk.Smart.SerialNumber, Mode=OneWay}"/><Run Text="   •   Firmware : "/><Run Text="{Binding SelectedDisk.Smart.FirmwareRevision, Mode=OneWay}"/>
+                                <Run Text="{DynamicResource Str_DiskHealth_Serial}"/><Run Text="{Binding SelectedDisk.Smart.SerialNumber, Mode=OneWay}"/><Run Text="{DynamicResource Str_DiskHealth_Firmware}"/><Run Text="{Binding SelectedDisk.Smart.FirmwareRevision, Mode=OneWay}"/>
                             </TextBlock>
                             <TextBlock Text="{Binding SelectedDisk.CapacityDisplay}" Style="{StaticResource SubtitleTextStyle}" FontSize="11" Margin="0,0,0,10"/>
 
@@ -128,42 +128,42 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
-                                    <TextBlock Text="Santé" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                                    <TextBlock Text="{DynamicResource Str_DiskHealth_Health}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                                     <TextBlock Text="{Binding SelectedDisk.HealthTier}" Foreground="{Binding SelectedDisk.HealthTier, Converter={StaticResource HealthTierToBrushConverter}}" FontWeight="Bold" FontSize="16"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock Text="Température" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                                    <TextBlock Text="{DynamicResource Str_DiskHealth_Temperature}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                                     <TextBlock Text="{Binding SelectedDisk.TemperatureDisplay}" FontWeight="Bold" FontSize="16"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Text="Endurance / Usure" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
+                                    <TextBlock Text="{DynamicResource Str_DiskHealth_Wear}" Style="{StaticResource SubtitleTextStyle}" FontSize="11"/>
                                     <TextBlock Text="{Binding SelectedDisk.WearDisplay}" FontWeight="Bold" FontSize="16"/>
                                 </StackPanel>
                             </Grid>
 
-                            <TextBlock Text="Historique de température" Style="{StaticResource SubtitleTextStyle}" FontSize="11" Margin="0,0,0,4"/>
+                            <TextBlock Text="{DynamicResource Str_DiskHealth_TempHistory}" Style="{StaticResource SubtitleTextStyle}" FontSize="11" Margin="0,0,0,4"/>
                             <Border Background="{StaticResource SurfaceBrush}" CornerRadius="6" Height="80" Padding="6">
                                 <controls:MiniLineChartControl Points="{Binding SelectedTemperatureHistory}" LineBrush="{StaticResource AccentBrush}"/>
                             </Border>
 
                             <UniformGrid Columns="2" Margin="0,12,0,0">
-                                <Button Content="Auto-test court" Margin="0,0,4,0" Command="{Binding RunShortSelfTestCommand}"/>
-                                <Button Content="Auto-test étendu" Style="{StaticResource SecondaryButtonStyle}" Margin="4,0,0,0" Command="{Binding RunExtendedSelfTestCommand}"/>
+                                <Button Content="{DynamicResource Str_DiskHealth_ShortSelfTest}" Margin="0,0,4,0" Command="{Binding RunShortSelfTestCommand}"/>
+                                <Button Content="{DynamicResource Str_DiskHealth_ExtendedSelfTest}" Style="{StaticResource SecondaryButtonStyle}" Margin="4,0,0,0" Command="{Binding RunExtendedSelfTestCommand}"/>
                             </UniformGrid>
                         </StackPanel>
                     </Border>
 
                     <Border Style="{StaticResource CardBorderStyle}" Padding="16">
                         <StackPanel>
-                            <TextBlock Text="Attributs SMART" FontWeight="Bold" Margin="0,0,0,8"/>
+                            <TextBlock Text="{DynamicResource Str_DiskHealth_SmartAttributes}" FontWeight="Bold" Margin="0,0,0,8"/>
                             <DataGrid ItemsSource="{Binding SelectedAttributes}" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="260" HeadersVisibility="Column">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding Id, StringFormat=0x{0:X2}}" Width="0.6*"/>
-                                    <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="2.2*"/>
-                                    <DataGridTextColumn Header="Actuel" Binding="{Binding Current}" Width="0.8*"/>
-                                    <DataGridTextColumn Header="Pire" Binding="{Binding Worst}" Width="0.8*"/>
-                                    <DataGridTextColumn Header="Seuil" Binding="{Binding Threshold}" Width="0.8*"/>
-                                    <DataGridTextColumn Header="Brut" Binding="{Binding RawDisplay}" Width="1.2*"/>
+                                    <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColId}" Binding="{Binding Id, StringFormat=0x{0:X2}}" Width="0.6*"/>
+                                    <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColName}" Binding="{Binding Name}" Width="2.2*"/>
+                                    <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColCurrent}" Binding="{Binding Current}" Width="0.8*"/>
+                                    <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColWorst}" Binding="{Binding Worst}" Width="0.8*"/>
+                                    <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColThreshold}" Binding="{Binding Threshold}" Width="0.8*"/>
+                                    <DataGridTextColumn Header="{DynamicResource Str_DiskHealth_ColRaw}" Binding="{Binding RawDisplay}" Width="1.2*"/>
                                 </DataGrid.Columns>
                                 <DataGrid.RowStyle>
                                     <Style TargetType="DataGridRow">
@@ -176,7 +176,7 @@
                                     </Style>
                                 </DataGrid.RowStyle>
                             </DataGrid>
-                            <TextBlock Text="Disque NVMe (ou attributs indisponibles) : pas de table d'attributs SATA — voir les cartes de santé ci-dessus (température, usure, endurance)."
+                            <TextBlock Text="{DynamicResource Str_DiskHealth_NvmeNote}"
                                        FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0" Visibility="Collapsed">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -194,7 +194,7 @@
 
                     <Border Style="{StaticResource CardBorderStyle}" Padding="16">
                         <StackPanel>
-                            <TextBlock Text="Alertes" FontWeight="Bold" Margin="0,0,0,8"/>
+                            <TextBlock Text="{DynamicResource Str_DiskHealth_Alerts}" FontWeight="Bold" Margin="0,0,0,8"/>
                             <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -202,21 +202,21 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
-                                    <TextBlock Text="Température max (°C)" Style="{StaticResource SubtitleTextStyle}" FontSize="11" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{DynamicResource Str_DiskHealth_MaxTemp}" Style="{StaticResource SubtitleTextStyle}" FontSize="11" Margin="0,0,0,4"/>
                                     <TextBox Text="{Binding AlertMaxTemperature, UpdateSourceTrigger=PropertyChanged}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Text="Endurance min. restante (%)" Style="{StaticResource SubtitleTextStyle}" FontSize="11" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{DynamicResource Str_DiskHealth_MinWear}" Style="{StaticResource SubtitleTextStyle}" FontSize="11" Margin="0,0,0,4"/>
                                     <TextBox Text="{Binding AlertMinWearPercent, UpdateSourceTrigger=PropertyChanged}"/>
                                 </StackPanel>
                             </Grid>
-                            <Button Content="Enregistrer les seuils" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding SaveAlertThresholdsCommand}"/>
+                            <Button Content="{DynamicResource Str_DiskHealth_SaveThresholds}" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding SaveAlertThresholdsCommand}"/>
                         </StackPanel>
                     </Border>
 
                     <Border Style="{StaticResource CardBorderStyle}" Padding="16">
                         <StackPanel>
-                            <TextBlock Text="Export" FontWeight="Bold" Margin="0,0,0,8"/>
+                            <TextBlock Text="{DynamicResource Str_DiskHealth_Export}" FontWeight="Bold" Margin="0,0,0,8"/>
                             <UniformGrid Columns="3">
                                 <Button Content="CSV" Margin="0,0,4,0" Command="{Binding ExportCommand}" CommandParameter="CSV"/>
                                 <Button Content="JSON" Margin="4,0,4,0" Command="{Binding ExportCommand}" CommandParameter="JSON"/>

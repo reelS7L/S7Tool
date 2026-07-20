@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using S7Tool.Services;
 
 namespace S7Tool.Models;
 
@@ -7,7 +8,7 @@ public partial class NetworkHost : ObservableObject
     public required string IpAddress { get; init; }
 
     [ObservableProperty]
-    private string hostname = "(résolution...)";
+    private string hostname = LocalizationManager.T("Str_NetScan_Resolving");
 
     [ObservableProperty]
     private string macAddress = "";

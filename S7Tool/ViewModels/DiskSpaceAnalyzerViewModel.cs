@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using S7Tool.Helpers;
 using S7Tool.Models;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
@@ -47,7 +48,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
     private FileSystemNode? selectedItem;
 
     [ObservableProperty]
-    private string statusText = "Choisis un dossier ou un disque à analyser.";
+    private string statusText = "";
 
     [ObservableProperty]
     private string progressText = "";
@@ -74,6 +75,8 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
     {
         _analyzer = analyzer;
         _dialogService = dialogService;
+
+        StatusText = LocalizationManager.T("Str_DiskSpace_InitialStatus");
 
         foreach (var drive in DriveInfo.GetDrives().Where(d => d.IsReady))
             AvailableDrives.Add($"{drive.Name} ({Math.Round(drive.TotalSize / 1024.0 / 1024.0 / 1024.0, 0)} Go)");
@@ -103,14 +106,14 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
     {
         if (!Directory.Exists(RootPath))
         {
-            _dialogService.ShowWarning("Ce dossier n'existe pas ou n'est plus accessible.");
+            _dialogService.ShowWarning(LocalizationManager.T("Str_DiskSpace_FolderNotFound"));
             return;
         }
 
         Items.Clear();
         Breadcrumb.Clear();
         IsScanning = true;
-        StatusText = "Analyse en cours...";
+        StatusText = LocalizationManager.T("Str_DiskSpace_Scanning");
         _scanCts = new CancellationTokenSource();
         _scanStopwatch.Restart();
         _lastListRefresh = DateTime.MinValue;
@@ -120,7 +123,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
         {
             ScannedFileCount = p.FilesScanned;
             ScannedFolderCount = p.FoldersScanned;
-            ProgressText = $"{p.FilesScanned:N0} fichier(s), {p.FoldersScanned:N0} dossier(s) — {FormatBytes(p.BytesScanned)}";
+            ProgressText = string.Format(LocalizationManager.T("Str_DiskSpace_ProgressText"), p.FilesScanned, p.FoldersScanned, FormatBytes(p.BytesScanned));
 
             if ((DateTime.UtcNow - _lastListRefresh).TotalMilliseconds >= 800)
             {
@@ -139,17 +142,17 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
 
             RefreshDisplayedItems();
 
-            StatusText = $"Analyse terminée en {ScanDurationDisplay} — {ScannedFileCount:N0} fichier(s), {ScannedFolderCount:N0} dossier(s).";
+            StatusText = string.Format(LocalizationManager.T("Str_DiskSpace_ScanDone"), ScanDurationDisplay, ScannedFileCount, ScannedFolderCount);
         }
         catch (OperationCanceledException)
         {
             _scanStopwatch.Stop();
-            StatusText = "Analyse interrompue.";
+            StatusText = LocalizationManager.T("Str_DiskSpace_ScanInterrupted");
         }
         catch (Exception ex)
         {
             _scanStopwatch.Stop();
-            _dialogService.ShowError(ex.Message, "Erreur d'analyse");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_DiskSpace_ScanErrorTitle"));
         }
         finally
         {
@@ -256,7 +259,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
         if (othersSum > 0)
         {
             double percent = Math.Round(othersSum * 100.0 / parentSize, 1);
-            ChartLegend.Add(new ChartLegendEntry("Autres", FormatBytes((long)othersSum), percent, ChartPalette.BrushForIndex(MaxChartSlices), null));
+            ChartLegend.Add(new ChartLegendEntry(LocalizationManager.T("Str_DiskSpace_Others"), FormatBytes((long)othersSum), percent, ChartPalette.BrushForIndex(MaxChartSlices), null));
         }
     }
 
@@ -268,7 +271,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
     {
         if (SelectedItem is null) return;
         try { Process.Start(new ProcessStartInfo(SelectedItem.FullPath) { UseShellExecute = true }); }
-        catch (Exception ex) { _dialogService.ShowError(ex.Message, "Impossible d'ouvrir"); }
+        catch (Exception ex) { _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_DiskSpace_CannotOpenTitle")); }
     }
 
     [RelayCommand]
@@ -276,7 +279,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
     {
         if (SelectedItem is null) return;
         try { Process.Start("explorer.exe", $"/select,\"{SelectedItem.FullPath}\""); }
-        catch (Exception ex) { _dialogService.ShowError(ex.Message, "Impossible d'ouvrir l'Explorateur"); }
+        catch (Exception ex) { _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_DiskSpace_CannotOpenExplorerTitle")); }
     }
 
     [RelayCommand]
@@ -298,7 +301,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
     {
         if (SelectedItem is null) return;
 
-        if (!_dialogService.Confirm($"Envoyer \"{SelectedItem.Name}\" ({SelectedItem.SizeDisplay}) à la corbeille ?", "Confirmer la suppression"))
+        if (!_dialogService.Confirm(string.Format(LocalizationManager.T("Str_DiskSpace_ConfirmDelete"), SelectedItem.Name, SelectedItem.SizeDisplay), LocalizationManager.T("Str_DiskSpace_ConfirmDeleteTitle")))
             return;
 
         try
@@ -312,20 +315,20 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
 
             CurrentNode?.Children.Remove(SelectedItem);
             RefreshDisplayedItems();
-            StatusText = $"\"{SelectedItem.Name}\" envoyé à la corbeille.";
+            StatusText = string.Format(LocalizationManager.T("Str_DiskSpace_SentToRecycleBin"), SelectedItem.Name);
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur de suppression");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_DiskSpace_DeleteErrorTitle"));
         }
     }
 
     [RelayCommand]
     private async Task RefreshSelectedFolderAsync()
     {
-        if (SelectedItem is null || !SelectedItem.IsDirectory) { _dialogService.ShowWarning("Sélectionne un dossier."); return; }
+        if (SelectedItem is null || !SelectedItem.IsDirectory) { _dialogService.ShowWarning(LocalizationManager.T("Str_DiskSpace_SelectFolder")); return; }
 
-        StatusText = $"Réactualisation de {SelectedItem.Name}...";
+        StatusText = string.Format(LocalizationManager.T("Str_DiskSpace_Refreshing"), SelectedItem.Name);
         try
         {
             using var cts = new CancellationTokenSource();
@@ -337,11 +340,11 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
             if (index >= 0) CurrentNode.Children[index] = freshNode;
 
             RefreshDisplayedItems();
-            StatusText = $"\"{freshNode.Name}\" réactualisé.";
+            StatusText = string.Format(LocalizationManager.T("Str_DiskSpace_Refreshed"), freshNode.Name);
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur de réactualisation");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_DiskSpace_RefreshErrorTitle"));
         }
     }
 

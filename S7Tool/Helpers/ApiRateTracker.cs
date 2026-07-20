@@ -32,10 +32,10 @@ namespace S7Tool.Services
             if (RetryAt != null && DateTime.Now < RetryAt)
             {
                 var sec = (RetryAt.Value - DateTime.Now).Seconds;
-                return $"Pause : {sec}s";
+                return string.Format(LocalizationManager.T("Str_AiChat_Cooldown"), sec);
             }
 
-            return $"Requêtes restantes : {Remaining}/{MaxRequestsPerDay}";
+            return string.Format(LocalizationManager.T("Str_AiChat_RemainingRequests"), Remaining, MaxRequestsPerDay);
         }
     }
 }

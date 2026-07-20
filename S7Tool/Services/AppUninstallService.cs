@@ -83,7 +83,7 @@ public class AppUninstallService : IAppUninstallService
     {
         foreach (var app in apps)
         {
-            log?.Invoke($"Désinstallation : {app.DisplayName}");
+            log?.Invoke($"{LocalizationManager.T("Str_Uninstall_LogUninstalling")} : {app.DisplayName}");
 
             try
             {
@@ -91,18 +91,18 @@ public class AppUninstallService : IAppUninstallService
 
                 if (exitCode == 0)
                 {
-                    log?.Invoke($"{app.DisplayName} : désinstallé avec succès");
+                    log?.Invoke(string.Format(LocalizationManager.T("Str_Uninstall_LogSuccess"), app.DisplayName));
                 }
                 else
                 {
-                    log?.Invoke($"{app.DisplayName} : code retour {exitCode}");
-                    log?.Invoke("Nouvelle tentative en mode visible...");
+                    log?.Invoke(string.Format(LocalizationManager.T("Str_Uninstall_LogExitCode"), app.DisplayName, exitCode));
+                    log?.Invoke(LocalizationManager.T("Str_Uninstall_LogRetryVisible"));
                     await RunVisibleUninstallAsync(app);
                 }
             }
             catch (Exception ex)
             {
-                log?.Invoke($"Erreur - {app.DisplayName} : {ex.Message}");
+                log?.Invoke(string.Format(LocalizationManager.T("Str_Uninstall_LogError"), app.DisplayName, ex.Message));
             }
         }
     }
@@ -117,7 +117,7 @@ public class AppUninstallService : IAppUninstallService
 
                 if (string.IsNullOrWhiteSpace(command))
                 {
-                    log?.Invoke($"Erreur - {app.DisplayName} : commande introuvable");
+                    log?.Invoke(string.Format(LocalizationManager.T("Str_Uninstall_LogCommandNotFound"), app.DisplayName));
                     return -1;
                 }
 

@@ -15,10 +15,6 @@ public class GeminiChatService : IGeminiChatService
     private const string StreamEndpoint =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:streamGenerateContent?alt=sse";
 
-    private const string NotConfiguredMessage =
-        "Clé API Gemini non configurée. Ouvre les paramètres de l'IA (icône ⚙) pour la renseigner, " +
-        "ou définis la variable d'environnement S7TOOL_GEMINI_API_KEY.";
-
     public GeminiChatService(ISecretsProvider secretsProvider)
     {
         _secretsProvider = secretsProvider;
@@ -35,13 +31,13 @@ public class GeminiChatService : IGeminiChatService
     {
         if (!IsConfigured)
         {
-            onUpdate(NotConfiguredMessage);
+            onUpdate(LocalizationManager.T("Str_AiChat_NotConfigured"));
             return;
         }
 
         if (!_tracker.CanSend())
         {
-            onUpdate("Limite de requêtes atteinte, réessaie dans un instant.");
+            onUpdate(LocalizationManager.T("Str_AiChat_RateLimited"));
             return;
         }
 
@@ -69,7 +65,7 @@ public class GeminiChatService : IGeminiChatService
                 if ((int)response.StatusCode == 429)
                 {
                     _tracker.SetCooldown(30);
-                    onUpdate("Trop de requêtes envoyées à l'API. Réessaie dans environ 30s.");
+                    onUpdate(LocalizationManager.T("Str_AiChat_TooManyRequests"));
                     return;
                 }
 
@@ -81,7 +77,7 @@ public class GeminiChatService : IGeminiChatService
 
                 string errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
                 string detail = TryExtractErrorMessage(errorBody) ?? errorBody;
-                onUpdate($"Erreur API Gemini (code {(int)response.StatusCode})." +
+                onUpdate(string.Format(LocalizationManager.T("Str_AiChat_ApiError"), (int)response.StatusCode) +
                     (string.IsNullOrWhiteSpace(detail) ? "" : $"\n{detail}"));
                 return;
             }
@@ -111,7 +107,7 @@ public class GeminiChatService : IGeminiChatService
             return;
         }
 
-        onUpdate("Service Gemini indisponible pour le moment, réessaie plus tard.");
+        onUpdate(LocalizationManager.T("Str_AiChat_ServiceUnavailable"));
     }
 
     private static string? TryExtractErrorMessage(string json)
@@ -148,6 +144,6 @@ public class GeminiChatService : IGeminiChatService
 
     public string GetStatus()
     {
-        return IsConfigured ? _tracker.GetStatus() : "Clé API non configurée";
+        return IsConfigured ? _tracker.GetStatus() : LocalizationManager.T("Str_AiChat_KeyNotConfigured");
     }
 }

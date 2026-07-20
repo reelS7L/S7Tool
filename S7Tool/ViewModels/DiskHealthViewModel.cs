@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using S7Tool.DiskEngine.Models;
 using S7Tool.Models;
+using S7Tool.Services;
 using S7Tool.Services.Interfaces;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
@@ -30,7 +31,7 @@ public partial class DiskHealthViewModel : ObservableObject
     private bool isBusy;
 
     [ObservableProperty]
-    private string statusText = "Prêt.";
+    private string statusText = "";
 
     [ObservableProperty] private int diskCount;
     [ObservableProperty] private double totalCapacityGb;
@@ -47,6 +48,8 @@ public partial class DiskHealthViewModel : ObservableObject
     {
         _healthService = healthService;
         _dialogService = dialogService;
+
+        statusText = LocalizationManager.T("Str_Common_Ready");
 
         var thresholds = _healthService.GetAlertThresholds();
         alertMaxTemperature = thresholds.MaxTemperatureCelsius;
@@ -67,7 +70,7 @@ public partial class DiskHealthViewModel : ObservableObject
     private async Task RefreshAsync()
     {
         IsBusy = true;
-        StatusText = "Lecture SMART/NVMe en cours...";
+        StatusText = LocalizationManager.T("Str_DiskHealth_ReadingStatus");
 
         try
         {
@@ -89,11 +92,11 @@ public partial class DiskHealthViewModel : ObservableObject
 
             SelectedDisk = rows.FirstOrDefault(r => r.DiskNumber == selectedDiskNumber) ?? rows.FirstOrDefault();
 
-            StatusText = $"{DiskCount} disque(s) analysé(s).";
+            StatusText = string.Format(LocalizationManager.T("Str_DiskHealth_DisksAnalyzed"), DiskCount);
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur de lecture SMART");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_DiskHealth_ReadErrorTitle"));
         }
         finally
         {
@@ -109,9 +112,9 @@ public partial class DiskHealthViewModel : ObservableObject
             bool wearAlert = r.WearPercentUsed.HasValue && r.WearPercentUsed < AlertMinWearPercent;
 
             if (tempAlert)
-                _dialogService.ShowWarning($"{r.DisplayName} : température élevée ({r.TemperatureDisplay}, seuil {AlertMaxTemperature} °C).", "Alerte disque");
+                _dialogService.ShowWarning(string.Format(LocalizationManager.T("Str_DiskHealth_TempAlert"), r.DisplayName, r.TemperatureDisplay, AlertMaxTemperature), LocalizationManager.T("Str_DiskHealth_AlertTitle"));
             if (wearAlert)
-                _dialogService.ShowWarning($"{r.DisplayName} : endurance restante faible ({r.WearDisplay}, seuil {AlertMinWearPercent} %).", "Alerte disque");
+                _dialogService.ShowWarning(string.Format(LocalizationManager.T("Str_DiskHealth_WearAlert"), r.DisplayName, r.WearDisplay, AlertMinWearPercent), LocalizationManager.T("Str_DiskHealth_AlertTitle"));
         }
     }
 
@@ -144,25 +147,25 @@ public partial class DiskHealthViewModel : ObservableObject
 
     private async Task RunSelfTestAsync(bool extended)
     {
-        if (SelectedDisk is null) { _dialogService.ShowWarning("Sélectionne un disque."); return; }
+        if (SelectedDisk is null) { _dialogService.ShowWarning(LocalizationManager.T("Str_DiskHealth_SelectDisk")); return; }
 
+        string extendedWord = LocalizationManager.T(extended ? "Str_DiskHealth_SelfTestExtended" : "Str_DiskHealth_SelfTestShort");
         if (!_dialogService.Confirm(
-            $"Lancer un auto-test SMART {(extended ? "étendu" : "court")} sur {SelectedDisk.DisplayName} ?\n\n" +
-            "Le disque exécute le test en arrière-plan (peut prendre de quelques minutes à plusieurs dizaines de minutes pour un test étendu) — pas de blocage de l'interface, relance une actualisation plus tard pour voir le résultat.",
-            "Auto-test SMART"))
+            string.Format(LocalizationManager.T("Str_DiskHealth_ConfirmSelfTest"), extendedWord, SelectedDisk.DisplayName),
+            LocalizationManager.T("Str_DiskHealth_SelfTestTitle")))
             return;
 
         IsBusy = true;
-        StatusText = "Lancement de l'auto-test...";
+        StatusText = LocalizationManager.T("Str_DiskHealth_StartingSelfTest");
         try
         {
             bool started = await _healthService.StartSelfTestAsync(SelectedDisk.DiskNumber, extended);
-            StatusText = started ? "Auto-test lancé." : "Ce disque ne prend pas en charge l'auto-test SMART bas niveau.";
-            if (!started) _dialogService.ShowWarning("Ce disque (ou son contrôleur) ne prend pas en charge le déclenchement d'auto-test SMART.", "Auto-test indisponible");
+            StatusText = LocalizationManager.T(started ? "Str_DiskHealth_SelfTestStarted" : "Str_DiskHealth_SelfTestUnsupported");
+            if (!started) _dialogService.ShowWarning(LocalizationManager.T("Str_DiskHealth_SelfTestUnavailableMessage"), LocalizationManager.T("Str_DiskHealth_SelfTestUnavailableTitle"));
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_Dialog_Error"));
         }
         finally
         {
@@ -174,7 +177,7 @@ public partial class DiskHealthViewModel : ObservableObject
     private void SaveAlertThresholds()
     {
         _healthService.SetAlertThresholds(new AlertThresholds(AlertMaxTemperature, AlertMinWearPercent));
-        _dialogService.ShowSuccess("Seuils d'alerte enregistrés.");
+        _dialogService.ShowSuccess(LocalizationManager.T("Str_DiskHealth_ThresholdsSaved"));
     }
 
     [RelayCommand]
@@ -185,19 +188,19 @@ public partial class DiskHealthViewModel : ObservableObject
 
         var dialog = new SaveFileDialog
         {
-            FileName = $"sante-disques.{extension}",
-            Filter = $"Fichier {format.ToUpperInvariant()}|*.{extension}"
+            FileName = $"disk-health.{extension}",
+            Filter = $"{format.ToUpperInvariant()} file|*.{extension}"
         };
         if (dialog.ShowDialog() != true) return;
 
         try
         {
             await _healthService.ExportAsync(Disks.Select(d => d.Smart), format, dialog.FileName);
-            _dialogService.ShowSuccess($"Export {format.ToUpperInvariant()} enregistré : {dialog.FileName}");
+            _dialogService.ShowSuccess(string.Format(LocalizationManager.T("Str_DiskHealth_ExportSaved"), format.ToUpperInvariant(), dialog.FileName));
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError(ex.Message, "Erreur d'export");
+            _dialogService.ShowError(ex.Message, LocalizationManager.T("Str_DiskHealth_ExportErrorTitle"));
         }
     }
 }
