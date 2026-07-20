@@ -40,6 +40,7 @@ public partial class App : Application
         services.AddSingleton<ISecretsProvider, SecretsProvider>();
         services.AddSingleton<IGeminiChatService, GeminiChatService>();
         services.AddSingleton<IAppUninstallService, AppUninstallService>();
+        services.AddSingleton<IAppInstallService, AppInstallService>();
         services.AddSingleton<IProcessMonitorService, ProcessMonitorService>();
         services.AddSingleton<IWindowsUpdateService, WindowsUpdateService>();
         services.AddSingleton<INetworkScannerService, NetworkScannerService>();
@@ -50,6 +51,7 @@ public partial class App : Application
 
         services.AddTransient<MainViewModel>();
         services.AddTransient<UninstallViewModel>();
+        services.AddTransient<AppInstallViewModel>();
         services.AddTransient<ProgressViewModel>();
         services.AddTransient<RenamePCViewModel>();
         services.AddTransient<WindowsUpdateViewModel>();
@@ -63,6 +65,7 @@ public partial class App : Application
 
         services.AddTransient<MainWindow>();
         services.AddTransient<UninstallWindow>();
+        services.AddTransient<AppInstallWindow>();
         services.AddTransient<ProgressWindow>();
         services.AddTransient<RenamePCWindow>();
         services.AddTransient<WindowsUpdateWindow>();

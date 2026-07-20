@@ -132,6 +132,14 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void InstallApps()
+    {
+        var window = _serviceProvider.GetRequiredService<AppInstallWindow>();
+        window.Owner = System.Windows.Application.Current.MainWindow;
+        window.Show();
+    }
+
+    [RelayCommand]
     private void OpenAiChat() => _serviceProvider.GetRequiredService<AiChatWindow>().Show();
 
     [RelayCommand]

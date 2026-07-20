@@ -89,6 +89,16 @@
                                 </StackPanel>
                             </Button>
 
+                            <Button Command="{Binding InstallAppsCommand}" Style="{StaticResource DashboardTileStyle}">
+                                <StackPanel>
+                                    <Border Style="{StaticResource DashboardTileIconStyle}">
+                                        <TextBlock Text="&#xE896;" Style="{StaticResource DashboardTileGlyphStyle}"/>
+                                    </Border>
+                                    <TextBlock Text="Installer des applications" Style="{StaticResource DashboardTileTitleStyle}"/>
+                                    <TextBlock Text="Recherche et installation via winget" Style="{StaticResource DashboardTileSubtitleStyle}"/>
+                                </StackPanel>
+                            </Button>
+
                             <Button Command="{Binding DisableFastStartupCommand}" Style="{StaticResource DashboardTileStyle}">
                                 <StackPanel>
                                     <Border Style="{StaticResource DashboardTileIconStyle}">

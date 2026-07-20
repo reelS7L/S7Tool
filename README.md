@@ -20,6 +20,7 @@ The repository contains three .NET 8 projects (no solution file — build each i
 - **Disk Health** — SMART (ATA) and NVMe health dashboard, read via raw passthrough, no WMI.
 - **Disk Space Analyzer** — list, treemap, and pie-chart views of disk usage, each with a right-click context menu (open, open in Explorer, copy path, refresh, properties, delete).
 - **Uninstaller** — installed-application removal.
+- **App Installer** — browse a curated list of popular apps or search the winget catalog, check the ones you want, and install them all silently via winget.
 - **Rename PC** — computer name management.
 - **Windows Update Manager** — Windows Update control via the WUApi COM interface.
 - **Disable Fast Startup** — one-click toggle.
