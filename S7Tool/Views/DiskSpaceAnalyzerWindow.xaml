@@ -48,14 +48,14 @@
         </Style>
 
         <ContextMenu x:Key="SpaceItemContextMenu">
-            <MenuItem Header="{DynamicResource Str_Common_Open}" Command="{Binding PlacementTarget.DataContext.OpenSelectedCommand, RelativeSource={RelativeSource Self}}"/>
-            <MenuItem Header="{DynamicResource Str_Common_ShowInExplorer}" Command="{Binding PlacementTarget.DataContext.ShowInExplorerCommand, RelativeSource={RelativeSource Self}}"/>
-            <MenuItem Header="{DynamicResource Str_Common_CopyPath}" Command="{Binding PlacementTarget.DataContext.CopyPathCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_Open}" Command="{Binding PlacementTarget.DataContext.OpenSelectedCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_ShowInExplorer}" Command="{Binding PlacementTarget.DataContext.ShowInExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_CopyPath}" Command="{Binding PlacementTarget.DataContext.CopyPathCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
             <Separator/>
-            <MenuItem Header="{DynamicResource Str_Common_RefreshFolder}" Command="{Binding PlacementTarget.DataContext.RefreshSelectedFolderCommand, RelativeSource={RelativeSource Self}}"/>
-            <MenuItem Header="{DynamicResource Str_Common_Properties}" Command="{Binding PlacementTarget.DataContext.ShowPropertiesCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_RefreshFolder}" Command="{Binding PlacementTarget.DataContext.RefreshSelectedFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_Properties}" Command="{Binding PlacementTarget.DataContext.ShowPropertiesCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
             <Separator/>
-            <MenuItem Header="{DynamicResource Str_Common_DeleteToRecycleBin}" Command="{Binding PlacementTarget.DataContext.DeleteSelectedCommand, RelativeSource={RelativeSource Self}}"/>
+            <MenuItem Header="{DynamicResource Str_Common_DeleteToRecycleBin}" Command="{Binding PlacementTarget.DataContext.DeleteSelectedCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
         </ContextMenu>
     </Window.Resources>
 
@@ -260,14 +260,14 @@
                     </DataGrid.Columns>
                     <DataGrid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Ouvrir" Command="{Binding PlacementTarget.DataContext.OpenSelectedCommand, RelativeSource={RelativeSource Self}}"/>
-                            <MenuItem Header="Afficher dans l'Explorateur" Command="{Binding PlacementTarget.DataContext.ShowInExplorerCommand, RelativeSource={RelativeSource Self}}"/>
-                            <MenuItem Header="Copier le chemin" Command="{Binding PlacementTarget.DataContext.CopyPathCommand, RelativeSource={RelativeSource Self}}"/>
+                            <MenuItem Header="{DynamicResource Str_Common_Open}" Command="{Binding PlacementTarget.DataContext.OpenSelectedCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="{DynamicResource Str_Common_ShowInExplorer}" Command="{Binding PlacementTarget.DataContext.ShowInExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="{DynamicResource Str_Common_CopyPath}" Command="{Binding PlacementTarget.DataContext.CopyPathCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                             <Separator/>
-                            <MenuItem Header="Rafraîchir ce dossier" Command="{Binding PlacementTarget.DataContext.RefreshSelectedFolderCommand, RelativeSource={RelativeSource Self}}"/>
-                            <MenuItem Header="Propriétés" Command="{Binding PlacementTarget.DataContext.ShowPropertiesCommand, RelativeSource={RelativeSource Self}}"/>
+                            <MenuItem Header="{DynamicResource Str_Common_RefreshFolder}" Command="{Binding PlacementTarget.DataContext.RefreshSelectedFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="{DynamicResource Str_Common_Properties}" Command="{Binding PlacementTarget.DataContext.ShowPropertiesCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                             <Separator/>
-                            <MenuItem Header="Supprimer (corbeille)" Command="{Binding PlacementTarget.DataContext.DeleteSelectedCommand, RelativeSource={RelativeSource Self}}"/>
+                            <MenuItem Header="{DynamicResource Str_Common_DeleteToRecycleBin}" Command="{Binding PlacementTarget.DataContext.DeleteSelectedCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                         </ContextMenu>
                     </DataGrid.ContextMenu>
                 </DataGrid>
