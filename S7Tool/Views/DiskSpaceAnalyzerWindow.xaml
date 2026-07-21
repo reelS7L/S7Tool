@@ -214,8 +214,9 @@
         <Grid Grid.Row="12">
             <Border Style="{StaticResource CardBorderStyle}" Padding="10"
                     Visibility="{Binding ViewMode, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Liste}">
-                <DataGrid ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
-                          AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" HeadersVisibility="Column">
+                <DataGrid x:Name="ItemsGrid" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
+                          AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" HeadersVisibility="Column"
+                          PreviewMouseRightButtonDown="ItemsGrid_PreviewMouseRightButtonDown">
                     <DataGrid.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding NavigateIntoCommand}" CommandParameter="{Binding SelectedItem}"/>
                     </DataGrid.InputBindings>

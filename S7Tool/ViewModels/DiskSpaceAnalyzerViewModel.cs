@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace S7Tool.ViewModels;
 
@@ -19,7 +20,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
     private CancellationTokenSource? _scanCts;
     private FileSystemNode? _scanRoot;
     private readonly Stopwatch _scanStopwatch = new();
-    private DateTime _lastListRefresh = DateTime.MinValue;
+    private readonly DispatcherTimer _liveRefreshTimer;
 
     private const int MaxDisplayedItems = 300;
 
@@ -80,6 +81,14 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
 
         foreach (var drive in DriveInfo.GetDrives().Where(d => d.IsReady))
             AvailableDrives.Add($"{drive.Name} ({Math.Round(drive.TotalSize / 1024.0 / 1024.0 / 1024.0, 0)} Go)");
+
+        _liveRefreshTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _liveRefreshTimer.Tick += (_, _) =>
+        {
+            ScanDurationDisplay = FormatDuration(_scanStopwatch.Elapsed);
+            UpdateDriveInfo();
+            RefreshDisplayedItems();
+        };
     }
 
     partial void OnFilterTextChanged(string value) => RefreshDisplayedItems();
@@ -116,20 +125,14 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
         StatusText = LocalizationManager.T("Str_DiskSpace_Scanning");
         _scanCts = new CancellationTokenSource();
         _scanStopwatch.Restart();
-        _lastListRefresh = DateTime.MinValue;
         UpdateDriveInfo();
+        _liveRefreshTimer.Start();
 
         var progress = new Progress<ScanProgress>(p =>
         {
             ScannedFileCount = p.FilesScanned;
             ScannedFolderCount = p.FoldersScanned;
             ProgressText = string.Format(LocalizationManager.T("Str_DiskSpace_ProgressText"), p.FilesScanned, p.FoldersScanned, FormatBytes(p.BytesScanned));
-
-            if ((DateTime.UtcNow - _lastListRefresh).TotalMilliseconds >= 800)
-            {
-                _lastListRefresh = DateTime.UtcNow;
-                RefreshDisplayedItems();
-            }
         });
 
         try
@@ -139,7 +142,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
                 progress, _scanCts.Token);
             _scanStopwatch.Stop();
             ScanDurationDisplay = FormatDuration(_scanStopwatch.Elapsed);
-
+            UpdateDriveInfo();
             RefreshDisplayedItems();
 
             StatusText = string.Format(LocalizationManager.T("Str_DiskSpace_ScanDone"), ScanDurationDisplay, ScannedFileCount, ScannedFolderCount);
@@ -156,6 +159,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
         }
         finally
         {
+            _liveRefreshTimer.Stop();
             IsScanning = false;
             _scanCts?.Dispose();
             _scanCts = null;
