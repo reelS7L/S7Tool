@@ -41,10 +41,10 @@ public class DiskSpaceAnalyzerService : IDiskSpaceAnalyzerService
     {
         ct.ThrowIfCancellationRequested();
 
-        List<string> entries;
+        List<FileSystemInfo> entries;
         try
         {
-            entries = await Task.Run(() => Directory.EnumerateFileSystemEntries(node.FullPath).ToList(), ct);
+            entries = new DirectoryInfo(node.FullPath).EnumerateFileSystemInfos().ToList();
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
         {
@@ -62,7 +62,7 @@ public class DiskSpaceAnalyzerService : IDiskSpaceAnalyzerService
             FileAttributes attributes;
             try
             {
-                attributes = File.GetAttributes(entry);
+                attributes = entry.Attributes;
             }
             catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
             {
@@ -72,27 +72,26 @@ public class DiskSpaceAnalyzerService : IDiskSpaceAnalyzerService
             if (attributes.HasFlag(FileAttributes.ReparsePoint))
                 continue;
 
-            if (attributes.HasFlag(FileAttributes.Directory))
+            if (entry is DirectoryInfo)
             {
                 var childNode = new FileSystemNode
                 {
-                    Name = Path.GetFileName(entry),
-                    FullPath = entry,
+                    Name = entry.Name,
+                    FullPath = entry.FullName,
                     IsDirectory = true,
                     Parent = node
                 };
                 node.AddChild(childNode);
                 subDirTasks.Add(ScanDirectoryThrottledAsync(childNode, semaphore, progress, ct));
             }
-            else
+            else if (entry is FileInfo info)
             {
                 try
                 {
-                    var info = new FileInfo(entry);
                     var fileNode = new FileSystemNode
                     {
                         Name = info.Name,
-                        FullPath = entry,
+                        FullPath = info.FullName,
                         IsDirectory = false,
                         SizeBytes = info.Length,
                         LastWriteTimeUtc = info.LastWriteTimeUtc,
