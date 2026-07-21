@@ -131,6 +131,7 @@ public static class Strings
         ["Str_DiskSpace_Refreshed"] = ("\"{0}\" réactualisé.", "\"{0}\" refreshed."),
         ["Str_DiskSpace_RefreshErrorTitle"] = ("Erreur de réactualisation", "Refresh error"),
         ["Str_DiskSpace_Others"] = ("Autres", "Others"),
+        ["Str_DiskSpace_RemainingTime"] = ("Temps restant estimé : ~{0}", "Estimated time remaining: ~{0}"),
 
         ["Str_DiskHealth_Title"] = ("Santé des disques (SMART/NVMe)", "Disk Health (SMART/NVMe)"),
         ["Str_DiskHealth_Header"] = ("Santé des disques", "Disk health"),

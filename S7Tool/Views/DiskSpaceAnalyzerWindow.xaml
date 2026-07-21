@@ -158,8 +158,19 @@
             </Border>
         </UniformGrid>
 
-        <TextBlock Grid.Row="6" Text="{Binding ProgressText}" Style="{StaticResource SubtitleTextStyle}" FontSize="12"
-                   Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <StackPanel Grid.Row="6" Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ProgressBar Height="6" Minimum="0" Maximum="100" Margin="0,0,0,6"
+                         Value="{Binding ScanProgressPercent, Mode=OneWay}"
+                         IsIndeterminate="{Binding IsScanProgressIndeterminate}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding ProgressText}" Style="{StaticResource SubtitleTextStyle}" FontSize="12"/>
+                <TextBlock Grid.Column="1" Text="{Binding RemainingTimeDisplay}" Style="{StaticResource SubtitleTextStyle}" FontSize="12"/>
+            </Grid>
+        </StackPanel>
 
         <Grid Grid.Row="8">
             <Grid.ColumnDefinitions>

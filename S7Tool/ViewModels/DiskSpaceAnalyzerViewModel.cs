@@ -21,6 +21,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
     private FileSystemNode? _scanRoot;
     private readonly Stopwatch _scanStopwatch = new();
     private readonly DispatcherTimer _liveRefreshTimer;
+    private long _scanTargetTotalBytes;
 
     private const int MaxDisplayedItems = 300;
 
@@ -40,6 +41,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ScanCommand))]
     [NotifyCanExecuteChangedFor(nameof(StopScanCommand))]
+    [NotifyPropertyChangedFor(nameof(IsScanProgressIndeterminate))]
     private bool isScanning;
 
     [ObservableProperty]
@@ -53,6 +55,18 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
 
     [ObservableProperty]
     private string progressText = "";
+
+    [ObservableProperty]
+    private double scanProgressPercent;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsScanProgressIndeterminate))]
+    private bool hasScanProgressTarget;
+
+    [ObservableProperty]
+    private string remainingTimeDisplay = "";
+
+    public bool IsScanProgressIndeterminate => IsScanning && !HasScanProgressTarget;
 
     [ObservableProperty] private double driveTotalGb;
     [ObservableProperty] private double driveFreeGb;
@@ -88,6 +102,7 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
             ScanDurationDisplay = FormatDuration(_scanStopwatch.Elapsed);
             UpdateDriveInfo();
             RefreshDisplayedItems();
+            UpdateRemainingTimeEstimate();
         };
     }
 
@@ -126,6 +141,15 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
         _scanCts = new CancellationTokenSource();
         _scanStopwatch.Restart();
         UpdateDriveInfo();
+
+        string? pathRoot = Path.GetPathRoot(RootPath);
+        bool isWholeDriveScan = pathRoot is not null &&
+            string.Equals(RootPath.TrimEnd('\\'), pathRoot.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase);
+        _scanTargetTotalBytes = isWholeDriveScan ? (long)(DriveUsedGb * 1024 * 1024 * 1024) : 0;
+        HasScanProgressTarget = _scanTargetTotalBytes > 0;
+        ScanProgressPercent = 0;
+        RemainingTimeDisplay = "";
+
         _liveRefreshTimer.Start();
 
         var progress = new Progress<ScanProgress>(p =>
@@ -133,6 +157,9 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
             ScannedFileCount = p.FilesScanned;
             ScannedFolderCount = p.FoldersScanned;
             ProgressText = string.Format(LocalizationManager.T("Str_DiskSpace_ProgressText"), p.FilesScanned, p.FoldersScanned, FormatBytes(p.BytesScanned));
+
+            if (HasScanProgressTarget)
+                ScanProgressPercent = Math.Min(100, p.BytesScanned * 100.0 / _scanTargetTotalBytes);
         });
 
         try
@@ -161,9 +188,27 @@ public partial class DiskSpaceAnalyzerViewModel : ObservableObject
         {
             _liveRefreshTimer.Stop();
             IsScanning = false;
+            RemainingTimeDisplay = "";
             _scanCts?.Dispose();
             _scanCts = null;
         }
+    }
+
+    private void UpdateRemainingTimeEstimate()
+    {
+        if (!HasScanProgressTarget || ScanProgressPercent < 2)
+        {
+            RemainingTimeDisplay = "";
+            return;
+        }
+
+        var elapsed = _scanStopwatch.Elapsed;
+        var estimatedTotal = TimeSpan.FromSeconds(elapsed.TotalSeconds * 100.0 / ScanProgressPercent);
+        var remaining = estimatedTotal - elapsed;
+
+        RemainingTimeDisplay = remaining > TimeSpan.Zero
+            ? string.Format(LocalizationManager.T("Str_DiskSpace_RemainingTime"), FormatDuration(remaining))
+            : "";
     }
 
     private bool CanStopScan() => IsScanning;
